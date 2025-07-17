@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="vi">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Thêm/Sửa Đối tác - Thư viện điện tử FPT Polytechnic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/Image/logolibary.png">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #198754 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .page-title {
+            color: #2d3748;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-title i {
+            color: #198754;
+            font-size: 2rem;
+        }
+
+        .breadcrumb {
+            background: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .breadcrumb-item a {
+            color: #198754;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .breadcrumb-item.active {
+            color: #718096;
+        }
+
+        .form-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-card {
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-title i {
+            color: #198754;
+            font-size: 1.1rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.875rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #198754;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: white;
+        }
+
+        .form-control.is-invalid, .form-select.is-invalid {
+            border-color: #e53e3e;
+        }
+
+        .invalid-feedback {
+            display: none;
+            color: #e53e3e;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .form-control.is-invalid ~ .invalid-feedback, .form-select.is-invalid ~ .invalid-feedback {
+            display: block;
+        }
+
+        .required-mark {
+            color: #e53e3e;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #198754 0%, #764ba2 100%);
+            border: none;
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #718096;
+            border: none;
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #4a5568;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(113, 128, 150, 0.3);
+        }
+
+        .btn-back {
+            background: rgba(113, 128, 150, 0.1);
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            background: #718096;
+            color: white;
+            border-color: #718096;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0;
+            }
+            
+            .form-wrapper {
+                padding: 2rem 1.5rem;
+            }
+            
+            .section-card {
+                padding: 1.5rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .header-section {
+                padding: 1.5rem;
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .action-buttons {
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .action-buttons .btn {
+            margin: 0.5rem;
+            min-width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container animate-slide-in">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="d-flex justify-content-between align-items-start flex-wrap">
+                <div>
+                    <h1 class="page-title">
+                        <i class="fas fa-handshake"></i>
+                        Thêm Đối tác
+                    </h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                            <li class="breadcrumb-item"><a href="/admin/doitac">Quản lý đối tác</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Thêm đối tác</li>
+                        </ol>
+                    </nav>
+                </div>
+                <a href="/admin/doitac" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>Quay lại
+                </a>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-wrapper">
+            <form action="/admin/doitac/them" method="post" class="needs-validation" novalidate>
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-lg-6">
+                        <div class="section-card">
+                            <h3 class="section-title">
+                                <i class="fas fa-handshake"></i>
+                                Thông tin đối tác
+                            </h3>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="loaiDoiTac" class="form-label">
+                                        Loại đối tác <span class="required-mark">*</span>
+                                    </label>
+                                    <select class="form-select" id="loaiDoiTac" name="loaiDoiTac" required>
+                                        <option value="NCC">Nhà Cung Cấp</option>
+                                        <option value="NXB">Nhà Xuất Bản</option>
+                                    </select>
+                                    <div class="invalid-feedback">Vui lòng chọn loại đối tác.</div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="tenDoiTac" class="form-label">
+                                        Tên đối tác <span class="required-mark">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="tenDoiTac" name="tenDoiTac" 
+                                           placeholder="Nhập tên đối tác" required>
+                                    <div class="invalid-feedback">Vui lòng nhập tên đối tác (tối thiểu 2 ký tự).</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3 ncc-field" style="display: none;">
+                                    <label for="ngayNhap" class="form-label">
+                                        Ngày khai thác <span class="required-mark">*</span>
+                                    </label>
+                                    <input type="date" class="form-control" id="ngayNhap" name="ngayNhap" required>
+                                    <div class="invalid-feedback">Vui lòng chọn ngày khai thác.</div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3 nxb-field" style="display: none;">
+                                    <label for="sdt" class="form-label">
+                                        Số điện thoại
+                                    </label>
+                                    <input type="text" class="form-control" id="sdt" name="sdt" 
+                                           placeholder="Nhập số điện thoại">
+                                    <div class="invalid-feedback">Vui lòng nhập số điện thoại hợp lệ (10-15 số).</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 mb-3 nxb-field" style="display: none;">
+                                    <label for="diaChi" class="form-label">
+                                        Địa chỉ
+                                    </label>
+                                    <input type="text" class="form-control" id="diaChi" name="diaChi" 
+                                           placeholder="Nhập địa chỉ">
+                                    <div class="invalid-feedback">Vui lòng nhập địa chỉ.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-lg-4">
+                        <div class="action-buttons">
+                            <h3 class="section-title">
+                                <i class="fas fa-save"></i>
+                                Thao tác
+                            </h3>
+                            
+                            <div class="d-flex flex-column gap-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Lưu
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                                    <i class="fas fa-trash me-2"></i>Xóa form
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Show/hide fields based on selected partner type
+        document.getElementById('loaiDoiTac').addEventListener('change', function() {
+            const isNCC = this.value === 'NCC';
+            document.querySelectorAll('.ncc-field').forEach(el => el.style.display = isNCC ? 'block' : 'none');
+            document.querySelectorAll('.nxb-field').forEach(el => el.style.display = isNCC ? 'none' : 'block');
+            // Reset required attributes
+            document.getElementById('ngayNhap').required = isNCC;
+        });
+
+        // Form validation
+        (function() {
+            'use strict';
+            const form = document.querySelector('.needs-validation');
+            form.addEventListener('submit', function(event) {
+                let isValid = true;
+
+                // Reset previous validation states
+                document.querySelectorAll('.form-control, .form-select').forEach(input => {
+                    input.classList.remove('is-invalid');
+                });
+
+                const loaiDoiTac = document.getElementById('loaiDoiTac');
+                if (!loaiDoiTac.value) {
+                    isValid = false;
+                    loaiDoiTac.classList.add('is-invalid');
+                }
+
+                const tenDoiTac = document.getElementById('tenDoiTac');
+                if (tenDoiTac.value.length < 2) {
+                    isValid = false;
+                    tenDoiTac.classList.add('is-invalid');
+                }
+
+                const ngayNhap = document.getElementById('ngayNhap');
+                if (ngayNhap.required && !ngayNhap.value) {
+                    isValid = false;
+                    ngayNhap.classList.add('is-invalid');
+                }
+
+                const sdt = document.getElementById('sdt');
+                if (sdt.value && !/^\d{10,15}$/.test(sdt.value)) {
+                    isValid = false;
+                    sdt.classList.add('is-invalid');
+                }
+
+                if (!isValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    showNotification('Vui lòng điền đầy đủ thông tin bắt buộc và kiểm tra lại các trường có lỗi!', 'error');
+                }
+
+                form.classList.add('was-validated');
+            }, false);
+        })();
+
+        function clearForm() {
+            if (!confirm('Bạn có chắc chắn muốn xóa dữ liệu trong form?')) {
+                return;
+            }
+            const form = document.querySelector('form');
+            form.reset();
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('.ncc-field, .nxb-field').forEach(el => el.style.display = 'none');
+            showNotification('Đã xóa dữ liệu form!', 'success');
+            // Trigger the change event to reset field visibility
+            document.getElementById('loaiDoiTac').dispatchEvent(new Event('change'));
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'error' ? 'danger' : 'success'} position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'} me-2"></i>
+                    ${message}
+                </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                document.querySelector('form').submit();
+            }
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                if (confirm('Bạn có chắc chắn muốn đặt lại form?')) {
+                    clearForm();
+                }
+            }
+            if (e.key === 'Escape') {
+                if (confirm('Bạn có muốn quay lại trang danh sách?')) {
+                    window.location.href = '/admin/doitac';
+                }
+            }
+        });
+
+        // Trigger initial hide/show based on default selection
+        document.getElementById('loaiDoiTac').dispatchEvent(new Event('change'));
+    </script>
+</body>
+</html>

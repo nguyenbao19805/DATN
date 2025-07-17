@@ -1,0 +1,293 @@
+/* === RESET VÀ KIỂU CHỮ CHUNG CHO TOÀN TRANG === */
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1030;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    animation: slideDown 0.5s ease-in-out;
+}
+
+
+/* === THANH ĐIỀU HƯỚNG / NAVIGATION BAR === */
+.navbar-nav {
+    align-items: center;
+}
+
+.nav-link {
+    color: black !important;
+    font-weight: 700;
+    transition: background-color 0.3s, color 0.3s;
+    padding: 10px 15px !important;
+}
+
+.nav-link.active {
+    color: #198754 !important;
+    border-bottom: 3px solid #198754;
+    font-weight: bold;
+}
+
+.nav-link:hover,
+.nav-link.active:hover {
+    color: #208e4e !important;
+    background: #e6f4ea;
+    font-weight: bold;
+    border-bottom: none;
+    border-radius: 5px;
+}
+
+.login-btn {
+    background-color: #198754;
+    color: #fff;
+    border-radius: 25px;
+    padding: 6px 20px;
+    font-weight: bold;
+    transition: background 0.3s, box-shadow 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background-color: #145c32;
+    box-shadow: 0 4px 16px rgba(20, 92, 50, 0.25);
+}
+
+.logo-text {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.logo-text2 {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* === MEGA DROPDOWN === */
+.mega-dropdown {
+    background: #f9f9f9;    
+}
+
+.mega-item {
+    display: block;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background: #f9f9f9;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    text-decoration: none;
+    border: 2px solid transparent;
+    color: #000;
+}
+
+.mega-item:hover {
+    background: #fff;
+    color: #145c32;
+    border-color: #145c32;
+    transform: scale(1.05);
+}
+
+/* Adjust the user dropdown menu size */
+#userMenu + .dropdown-menu {
+    max-width: 150px; /* Reduce the width */
+    padding: 5px 0; /* Reduce padding for a more compact look */
+}
+
+
+
+img[alt="fptedu"] {
+    object-fit: cover;
+    width: 340px;
+    height: 350px;
+}
+
+/* === RESPONSIVE CHO TRANG MOBILE / DESKTOP === */
+@media (min-width: 992px) {
+    .dropdown-menu {
+        display: block;
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        left: 50% !important;
+        transform: translateX(-50%) translateY(20px);
+        position: absolute;
+        width: 100vw;
+        max-width: 1140px;
+        z-index: 1000;
+    }
+
+    .dropdown:hover .dropdown-menu {
+        visibility: visible;
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@media (max-width: 991.98px) {
+    .navbar-nav {
+        padding: 20px 0;
+    }
+
+    .nav-item {
+        text-align: center;
+    }
+
+    .mega-dropdown {
+        width: 100% !important;
+        position: static !important;
+        transform: none !important;
+    }
+
+    .mega-dropdown .col-md-4 {
+        display: none !important;
+    }
+
+    .mega-dropdown .row {
+        justify-content: center;
+    }
+
+    .dropdown-menu {
+        background: #f9f9f9;
+        border: none;
+        box-shadow: none;
+    }
+
+    .navbar-toggler {
+        border: none;
+    }
+
+    .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(0, 0, 0, 0.55)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    }
+}
+
+/* === CHÂN TRANG (FOOTER) === */
+footer {
+    background: #333;
+    color: white;
+    padding: 40px 0 20px;
+}
+
+footer h5 {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+footer ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+footer li {
+    margin-bottom: 10px;
+}
+
+footer a {
+    color: #ddd;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: white;
+}
+
+.copyright {
+    margin-top: 30px;
+    padding-top: 20px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* === CHÂN TRANG (FOOTER) === */
+footer {
+    background: #333; /* Dark background as shown in screenshot */
+    color: #fff; /* White text color for all elements */
+    padding: 40px 0 20px;
+    font-family: 'Roboto', sans-serif; /* Consistent with your overall design */
+}
+
+footer h5 {
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #fff; /* Explicitly white */
+}
+
+footer p, footer li {
+    font-size: 0.95rem;
+    color: #fff; /* White text color */
+}
+
+footer .fas {
+    margin-right: 10px;
+}
+
+footer a {
+    color: #fff; /* White text color for links */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: #198754; /* Green color on hover */
+    text-decoration: none;
+}
+
+footer .social-icons a {
+    font-size: 1.2rem;
+    margin-right: 15px;
+    transition: color 0.3s ease;
+}
+
+footer .social-icons a:hover {
+    color: #198754; /* Green color on hover */
+}
+
+footer ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+footer li {
+    margin-bottom: 10px;
+}
+
+.copyright {
+    margin-top: 30px;
+    padding-top: 20px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: #198754; /* Green background for copyright */
+    color: #fff; /* White text color */
+    font-size: 0.9rem;
+    width: 100%; /* Full width */
+    text-align: center;
+}
+
+.copyright p {
+    margin: 0;
+    padding: 10px 0; /* Add padding for better appearance */
+}
+
+/* Responsive Adjustments for Footer */
+@media (max-width: 768px) {
+    footer .row > div {
+        margin-bottom: 20px;
+    }
+
+    footer .col-md-4 {
+        text-align: center;
+    }
+
+    footer .social-icons {
+        justify-content: center;
+    }
+
+    footer .copyright {
+        text-align: center;
+    }
+
+    footer iframe {
+        height: 150px; /* Maintain reduced map height on mobile */
+    }
+}
+

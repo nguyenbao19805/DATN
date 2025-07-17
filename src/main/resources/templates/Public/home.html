@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="vi">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Thư viện điện tử FPT Polytechnic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/Css/style.css">
+    <link rel="stylesheet" href="/Css/layout.css">
+    <link rel="icon" type="image/png" href="/Image/logolibary.png">
+</head>
+<body>
+<div th:replace="Layout/header :: header"></div>
+
+<div id="logoSplash">
+    <div class="splash-content">
+        <img src="/Image/logolibary.png" alt="FPT Polytechnic Logo" class="animate-pulse" width="200" height="200">
+        <div class="loader"></div>
+    </div>
+</div>
+
+<section class="full-section">
+    <div class="container">
+        <div class="hero-section">
+            <h1 class="animate-fade-in">THƯ VIỆN ĐIỆN TỬ FPT POLYTECHNIC</h1>
+            <p class="hero-subtitle animate-fade-in-delay">Kho tài nguyên học tập và nghiên cứu dành cho sinh viên và giảng viên</p>
+            <div class="search-bar animate-fade-in-delay-2">
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-lg search-input" placeholder="Tìm kiếm tài liệu, sách, tạp chí...">
+                    <button class="btn btn-success search-btn" type="button">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </div>
+            </div>
+            <div class="categories animate-fade-in-delay-3">
+                <div class="category-card"><i class="fas fa-book"></i><h4>Sách</h4><p>Hơn 10,000 đầu sách</p></div>
+                <div class="category-card"><i class="fas fa-file-alt"></i><h4>Tài liệu</h4><p>Giáo trình, bài giảng</p></div>
+                <div class="category-card"><i class="fas fa-newspaper"></i><h4>Tạp chí</h4><p>Các số tạp chí chuyên ngành</p></div>
+                <div class="category-card"><i class="fas fa-graduation-cap"></i><h4>Luận văn</h4><p>Luận văn tốt nghiệp</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="featured-section">
+    <div class="container">
+        <div class="featured-container">
+            <div class="section-title">
+                <h2>SÁCH MỚI THÊM</h2>
+                <div class="title-line"></div>
+            </div>
+
+            <div class="swiper book-swiper" th:if="${not #lists.isEmpty(sachList)}">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" th:each="book : ${sachList}">
+                        <a th:href="@{/sach/chitiet/{id}(id=${book.maSach})}" class="book-card-link">
+                            <div class="book-card">
+                                <div class="book-image">
+                                    <img th:src="${book.hinhAnh != null ? '/' + book.hinhAnh : '/Image/default-book.jpg'}"
+                                         class="card-img-top"
+                                         th:alt="${book.tenSach}">
+                                    <div class="book-hover">
+                                        <span class="btn-view"><i class="fas fa-eye"></i> Xem chi tiết</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${book.tenSach}">Tên sách</h5>
+                                    <p class="card-author" th:text="${book.tacGia != null ? book.tacGia.tenTacGia : 'Không rõ tác giả'}">Tác giả</p>
+                                    <span th:text="${book.danhMuc != null && book.danhMuc.loaiSach != null ? book.danhMuc.loaiSach.tenLoaiSach : 'Chưa phân loại'}"></span>
+                                    <div class="card-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-book"></i>
+                                            <span th:text="${book.soLuong != null ? book.soLuong : 0}">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(sachList)}" class="empty-books text-center">
+                <i class="fas fa-book-open empty-icon mb-2"></i>
+                <p>Chưa có sách mới để hiển thị.</p>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="/product" class="btn btn-view-all">
+                    <span>Xem tất cả sách</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Sách Được Đánh Giá Cao Section -->
+<section class="featured-section">
+    <div class="container">
+        <div class="featured-container">
+            <div class="section-title">
+                <h2>SÁCH ĐƯỢC ĐÁNH GIÁ CAO</h2>
+                <div class="title-line"></div>
+            </div>
+
+            <div class="swiper book-swiper" th:if="${not #lists.isEmpty(sachList)}">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" th:each="book : ${sachList}">
+                        <a th:href="@{/sach/chitiet/{id}(id=${book.maSach})}" class="book-card-link">
+                            <div class="book-card">
+                                <div class="book-image">
+                                    <img th:src="${book.hinhAnh != null ? '/' + book.hinhAnh : '/Image/default-book.jpg'}"
+                                         class="card-img-top"
+                                         th:alt="${book.tenSach}">
+                                    <div class="book-hover">
+                                        <span class="btn-view"><i class="fas fa-eye"></i> Xem chi tiết</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${book.tenSach}">Tên sách</h5>
+                                    <p class="card-author" th:text="${book.tacGia != null ? book.tacGia.tenTacGia : 'Không rõ tác giả'}">Tác giả</p>
+                                    <span th:text="${book.danhMuc != null && book.danhMuc.loaiSach != null ? book.danhMuc.loaiSach.tenLoaiSach : 'Chưa phân loại'}"></span>
+                                    <div class="card-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-book"></i>
+                                            <span th:text="${book.soLuong != null ? book.soLuong : 0}">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(sachList)}" class="empty-books text-center">
+                <i class="fas fa-book-open empty-icon mb-2"></i>
+                <p>Chưa có sách được đánh giá cao để hiển thị.</p>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="/product" class="btn btn-view-all">
+                    <span>Xem tất cả sách</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Banner Section -->
+<section class="banner-section">
+    <div class="container">
+        <div class="banner text-center">
+            <img src="/Image/banner1.png" alt="Banner Quảng Cáo" class="img-fluid" style="max-width: 100%; height: auto;">
+        </div>
+    </div>
+</section>
+
+<!-- Sách Công Nghệ Thông Tin Section -->
+<section class="featured-section">
+    <div class="container">
+        <div class="featured-container">
+            <div class="section-title">
+                <h2>SÁCH CÔNG NGHỆ THÔNG TIN</h2>
+                <div class="title-line"></div>
+            </div>
+
+            <div class="swiper book-swiper" th:if="${not #lists.isEmpty(sachList)}">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" th:each="book : ${sachList}">
+                        <a th:href="@{/sach/chitiet/{id}(id=${book.maSach})}" class="book-card-link">
+                            <div class="book-card">
+                                <div class="book-image">
+                                    <img th:src="${book.hinhAnh != null ? '/' + book.hinhAnh : '/Image/default-book.jpg'}"
+                                         class="card-img-top"
+                                         th:alt="${book.tenSach}">
+                                    <div class="book-hover">
+                                        <span class="btn-view"><i class="fas fa-eye"></i> Xem chi tiết</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${book.tenSach}">Tên sách</h5>
+                                    <p class="card-author" th:text="${book.tacGia != null ? book.tacGia.tenTacGia : 'Không rõ tác giả'}">Tác giả</p>
+                                    <span th:text="${book.danhMuc != null && book.danhMuc.loaiSach != null ? book.danhMuc.loaiSach.tenLoaiSach : 'Chưa phân loại'}"></span>
+                                    <div class="card-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-book"></i>
+                                            <span th:text="${book.soLuong != null ? book.soLuong : 0}">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(sachList)}" class="empty-books text-center">
+                <i class="fas fa-book-open empty-icon mb-2"></i>
+                <p>Chưa có sách công nghệ thông tin để hiển thị.</p>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="/product" class="btn btn-view-all">
+                    <span>Xem tất cả sách</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sách Kinh Tế Section -->
+<section class="featured-section">
+    <div class="container">
+        <div class="featured-container">
+            <div class="section-title">
+                <h2>SÁCH KINH TẾ</h2>
+                <div class="title-line"></div>
+            </div>
+
+            <div class="swiper book-swiper" th:if="${not #lists.isEmpty(sachList)}">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" th:each="book : ${sachList}">
+                        <a th:href="@{/sach/chitiet/{id}(id=${book.maSach})}" class="book-card-link">
+                            <div class="book-card">
+                                <div class="book-image">
+                                    <img th:src="${book.hinhAnh != null ? '/' + book.hinhAnh : '/Image/default-book.jpg'}"
+                                         class="card-img-top"
+                                         th:alt="${book.tenSach}">
+                                    <div class="book-hover">
+                                        <span class="btn-view"><i class="fas fa-eye"></i> Xem chi tiết</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${book.tenSach}">Tên sách</h5>
+                                    <p class="card-author" th:text="${book.tacGia != null ? book.tacGia.tenTacGia : 'Không rõ tác giả'}">Tác giả</p>
+                                    <span th:text="${book.danhMuc != null && book.danhMuc.loaiSach != null ? book.danhMuc.loaiSach.tenLoaiSach : 'Chưa phân loại'}"></span>
+                                    <div class="card-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-book"></i>
+                                            <span th:text="${book.soLuong != null ? book.soLuong : 0}">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(sachList)}" class="empty-books text-center">
+                <i class="fas fa-book-open empty-icon mb-2"></i>
+                <p>Chưa có sách kinh tế để hiển thị.</p>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="/product" class="btn btn-view-all">
+                    <span>Xem tất cả sách</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="Layout/footer :: footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const swipers = document.querySelectorAll('.book-swiper');
+        swipers.forEach(function(swiperElement) {
+            new Swiper(swiperElement, {
+                slidesPerView: 5,
+                spaceBetween: 20,
+                loop: true,
+                effect: 'slide',
+                autoplay: {
+                    delay: 3000,
+                    disableOnInteraction: false,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                breakpoints: {
+                    320: {
+                        slidesPerView: 1,
+                        spaceBetween: 10,
+                    },
+                    576: {
+                        slidesPerView: 2,
+                        spaceBetween: 15,
+                    },
+                    768: {
+                        slidesPerView: 3,
+                        spaceBetween: 15,
+                    },
+                    992: {
+                        slidesPerView: 4,
+                        spaceBetween: 20,
+                    },
+                    1200: {
+                        slidesPerView: 5,
+                        spaceBetween: 20,
+                    }
+                }
+            });
+        });
+
+        const logoSplash = document.getElementById("logoSplash");
+        const isFirstVisit = sessionStorage.getItem("visited");
+
+        if (!isFirstVisit) {
+            setTimeout(() => {
+                logoSplash.style.opacity = "0";
+                setTimeout(() => {
+                    logoSplash.style.display = "none";
+                    sessionStorage.setItem("visited", "true");
+                }, 800);
+            }, 2000);
+        } else {
+            logoSplash.style.display = "none";
+        }
+    });
+</script>
+</body>
+</html>

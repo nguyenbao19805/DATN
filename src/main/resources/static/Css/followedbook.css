@@ -1,0 +1,40 @@
+.watched-books-section {
+    padding: 40px 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+.section-title h2 {
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.title-line {
+    width: 60px;
+    height: 4px;
+    background-color: #007bff;
+    margin-top: 8px;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+    transition: background-color 0.3s ease;
+}
+
+.book-title {
+    font-weight: 500;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.book-title:hover {
+    text-decoration: underline;
+}
+
+.empty-books {
+    font-size: 18px;
+    color: #666;
+}
+
+.btn-unwatch:hover {
+    opacity: 0.9;
+}
