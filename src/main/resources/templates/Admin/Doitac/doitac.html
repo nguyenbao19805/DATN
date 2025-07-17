@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Đối tác - Thư viện điện tử FPT Polytechnic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/Css/admin.css">
+    <link rel="stylesheet" href="/Css/style.css">
+    <link rel="icon" type="image/png" href="/Image/logolibary.png">
+</head>
+<body>
+    <div th:replace="Layout/header :: header"></div>
+
+    <section class="admin-main-section">
+        <div class="container-fluid">
+            <div class="row h-100">
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 admin-side-panel h-100">
+                    <h3 class="admin-side-title admin-fade-in">QUẢN TRỊ</h3>
+                    <ul class="nav flex-column">
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/docgia}"
+                               th:classappend="${activeSection == 'docgia'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="docgia">
+                                <i class="fas fa-users"></i> Quản lý độc giả
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/tacgia}"
+                               th:classappend="${activeSection == 'tacgia'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="tacgia">
+                                <i class="fa-solid fa-user-tie"></i></i> Quản lý tác giả
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/quanlysach}"
+                               th:classappend="${activeSection == 'quanlysach'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="quanlysach">
+                                <i class="fas fa-book"></i> Quản lý sách và phân loại
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/nhapmuon}"
+                               th:classappend="${activeSection == 'nhapmuon'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="nhapmuon">
+                                <i class="fas fa-exchange-alt"></i> Quản lý mượn sách
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/thongbao}"
+                               th:classappend="${activeSection == 'thongbao'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="thongbao">
+                                <i class="fas fa-bell"></i> Quản lý thông báo
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/danhgia}"
+                               th:classappend="${activeSection == 'danhgia'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="danhgia">
+                                <i class="fas fa-star"></i> Quản lý đánh giá
+                            </a>
+                        </li>
+                                                                        <li class="admin-side-item">
+                            <a th:href="@{/admin/nhanvien}" th:classappend="${activeSection == 'nhanvien'} ? 'admin-side-link active' : 'admin-side-link'" data-section="nhanvien">
+                                <i class="fas fa-user-tie"></i> Quản lý nhân viên
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/thongke}"
+                               th:classappend="${activeSection == 'thongke'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="thongke">
+                                <i class="fas fa-chart-bar"></i> Thống kê
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/lichsu}"
+                               th:classappend="${activeSection == 'lichsu'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="lichsu">
+                                <i class="fas fa-history"></i> Lịch sử
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-9 col-lg-10 admin-main-content h-100">
+                    <div class="admin-content-card admin-fade-in h-100 d-flex flex-column">
+                        <div class="admin-section-title">
+                            <h2>QUẢN LÝ ĐỐI TÁC</h2>
+                        </div>
+
+                        <!-- Tabs -->
+                        <ul class="nav nav-tabs" id="doitacTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="nha-cung-cap-tab" data-bs-toggle="tab"
+                                        data-bs-target="#nha-cung-cap" type="button" role="tab"
+                                        aria-controls="nha-cung-cap" aria-selected="true">Nhà Cung Cấp</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="nha-xuat-ban-tab" data-bs-toggle="tab"
+                                        data-bs-target="#nha-xuat-ban" type="button" role="tab"
+                                        aria-controls="nha-xuat-ban" aria-selected="false">Nhà Xuất Bản</button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content flex-grow-1" id="doitacTabsContent">
+                            <!-- Nhà Cung Cấp Tab -->
+                            <div class="tab-pane fade show active" id="nha-cung-cap" role="tabpanel"
+                                 aria-labelledby="nha-cung-cap-tab">
+                                <div class="management-section">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 10px;">
+                                        <h3 class="mb-2 mb-md-0">Danh sách nhà cung cấp</h3>
+                                        <form class="d-flex" th:action="@{/admin/doitac}" method="get">
+                                            <input type="hidden" name="nxbPage" th:value="${nxbCurrentPage}">
+                                            <input type="hidden" name="nxbSize" th:value="${nxbPageSize}">
+                                            <input type="hidden" name="nxbKeyword" th:value="${nxbKeyword}">
+                                            <input class="form-control me-2" type="search" name="nccKeyword"
+                                                   placeholder="Tìm kiếm nhà cung cấp..." th:value="${nccKeyword}">
+                                            <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+                                        </form>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>STT</th>
+                                                    <th>Tên nhà cung cấp</th>
+                                                    <th>Ngày khai thác</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="nhaCungCap, iterStat : ${nhaCungCapPage.content}">
+                                                    <td th:text="${iterStat.index + 1 + nhaCungCapPage.pageable.offset}"></td>
+                                                    <td th:text="${nhaCungCap.tenNCC}"></td>
+                                                    <td th:text="${#temporals.format(nhaCungCap.ngayNhap, 'dd/MM/yyyy')}"></td>
+                                                </tr>
+                                                <tr th:if="${nhaCungCapPage == null or nhaCungCapPage.content.size() == 0}">
+                                                    <td colspan="3" class="text-center">Không có nhà cung cấp nào.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="admin-add-btn-container">
+                                        <nav aria-label="NhaCungCap pagination">
+                                            <ul class="pagination justify-content-center">
+                                                <li class="page-item" th:classappend="${nhaCungCapPage.first} ? 'disabled'">
+                                                    <a class="page-link"
+                                                       th:href="@{/admin/doitac(nccPage=${nccCurrentPage - 1}, nccSize=${nccPageSize}, nccKeyword=${nccKeyword}, nxbPage=${nxbCurrentPage}, nxbSize=${nxbPageSize}, nxbKeyword=${nxbKeyword})}"
+                                                       tabindex="-1">Trước</a>
+                                                </li>
+                                                <li th:each="i : ${#numbers.sequence(0, nhaCungCapPage.totalPages - 1)}"
+                                                    th:class="${i == nccCurrentPage} ? 'page-item active' : 'page-item'">
+                                                    <a class="page-link"
+                                                       th:href="@{/admin/doitac(nccPage=${i}, nccSize=${nccPageSize}, nccKeyword=${nccKeyword}, nxbPage=${nxbCurrentPage}, nxbSize=${nxbPageSize}, nxbKeyword=${nxbKeyword})}"
+                                                       th:text="${i + 1}"></a>
+                                                </li>
+                                                <li class="page-item" th:classappend="${nhaCungCapPage.last} ? 'disabled'">
+                                                    <a class="page-link"
+                                                       th:href="@{/admin/doitac(nccPage=${nccCurrentPage + 1}, nccSize=${nccPageSize}, nccKeyword=${nccKeyword}, nxbPage=${nxbCurrentPage}, nxbSize=${nxbPageSize}, nxbKeyword=${nxbKeyword})}">Sau</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                        <a th:href="@{/admin/themnhacungcap}" class="admin-add-btn"><i class="fas fa-plus"></i> Thêm nhà cung cấp</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Nhà Xuất Bản Tab -->
+                            <div class="tab-pane fade" id="nha-xuat-ban" role="tabpanel"
+                                 aria-labelledby="nha-xuat-ban-tab">
+                                <div class="management-section">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 10px;">
+                                        <h3 class="mb-2 mb-md-0">Danh sách nhà xuất bản</h3>
+                                        <form class="d-flex" th:action="@{/admin/doitac}" method="get">
+                                            <input type="hidden" name="nccPage" th:value="${nccCurrentPage}">
+                                            <input type="hidden" name="nccSize" th:value="${nccPageSize}">
+                                            <input type="hidden" name="nccKeyword" th:value="${nccKeyword}">
+                                            <input class="form-control me-2" type="search" name="nxbKeyword"
+                                                   placeholder="Tìm kiếm nhà xuất bản..." th:value="${nxbKeyword}">
+                                            <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+                                        </form>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle">
+                                            <thead class="table-light">
+                                                <th>STT</th>
+                                                <th>Tên nhà xuất bản</th>
+                                                <th>Địa chỉ</th>
+                                                <th>Số điện thoại</th>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="nhaXuatBan, iterStat : ${nhaXuatBanPage.content}">
+                                                    <td th:text="${iterStat.index + 1 + nhaXuatBanPage.pageable.offset}"></td>
+                                                    <td th:text="${nhaXuatBan.tenNXB}"></td>
+                                                    <td th:text="${nhaXuatBan.diaChi}"></td>
+                                                    <td th:text="${nhaXuatBan.sdt}"></td>
+                                                </tr>
+                                                <tr th:if="${nhaXuatBanPage == null or nhaXuatBanPage.content.size() == 0}">
+                                                    <td colspan="4" class="text-center">Không có nhà xuất bản nào.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="admin-add-btn-container">
+                                        <nav aria-label="NhaXuatBan pagination">
+                                            <ul class="pagination justify-content-center">
+                                                <li class="page-item" th:classappend="${nhaXuatBanPage.first} ? 'disabled'">
+                                                    <a class="page-link"
+                                                       th:href="@{/admin/doitac(nxbPage=${nxbCurrentPage - 1}, nxbSize=${nxbPageSize}, nxbKeyword=${nxbKeyword}, nccPage=${nccCurrentPage}, nccSize=${nccPageSize}, nccKeyword=${nccKeyword})}"
+                                                       tabindex="-1">Trước</a>
+                                                </li>
+                                                <li th:each="i : ${#numbers.sequence(0, nhaXuatBanPage.totalPages - 1)}"
+                                                    th:class="${i == nxbCurrentPage} ? 'page-item active' : 'page-item'">
+                                                    <a class="page-link"
+                                                       th:href="@{/admin/doitac(nxbPage=${i}, nxbSize=${nxbPageSize}, nxbKeyword=${nxbKeyword}, nccPage=${nccCurrentPage}, nccSize=${nccPageSize}, nccKeyword=${nccKeyword})}"
+                                                       th:text="${i + 1}"></a>
+                                                </li>
+                                                <li class="page-item" th:classappend="${nhaXuatBanPage.last} ? 'disabled'">
+                                                    <a class="page-link"
+                                                       th:href="@{/admin/doitac(nxbPage=${nxbCurrentPage + 1}, nxbSize=${nxbPageSize}, nxbKeyword=${nxbKeyword}, nccPage=${nccCurrentPage}, nccSize=${nccPageSize}, nccKeyword=${nccKeyword})}">Sau</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                        <a th:href="@{/admin/themnhasanxuat}" class="admin-add-btn"><i class="fas fa-plus"></i> Thêm nhà xuất bản</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div th:replace="Layout/footer :: footer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOM loaded, initializing tabs');
+            const tabs = document.querySelectorAll('#doitacTabs .nav-link');
+            console.log('Found tabs:', tabs.length);
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    console.log('Tab clicked:', this.id);
+                    const target = document.querySelector(this.getAttribute('data-bs-target'));
+                    const allTabs = document.querySelectorAll('.tab-pane');
+                    const allTabLinks = document.querySelectorAll('#doitacTabs .nav-link');
+                    
+                    allTabs.forEach(t => t.classList.remove('show', 'active'));
+                    allTabLinks.forEach(t => t.classList.remove('active'));
+                    
+                    if (target) {
+                        target.classList.add('show', 'active');
+                        this.classList.add('active');
+                        console.log('Switched to tab:', target.id);
+                    } else {
+                        console.error('Target tab not found:', this.getAttribute('data-bs-target'));
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

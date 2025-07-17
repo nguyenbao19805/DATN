@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="vi">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${loaiSach != null ? 'Sách theo danh mục: ' + loaiSach.tenCategory : 'Sách theo danh mục'}">Sách theo danh mục</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/Css/admin.css"/>
+    <link rel="stylesheet" href="/Css/style.css"/>
+    <link rel="stylesheet" href="/Css/layout.css"/>
+    <link rel="icon" type="image/png" href="/Image/logolibary.png"/>
+    <style>
+        .book-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .book-image {
+            position: relative;
+            overflow: hidden;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .book-hover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .book-card:hover .book-hover {
+            opacity: 1;
+        }
+        .btn-view {
+            color: #fff;
+            background: #198754;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .card-body {
+            padding: 15px;
+            flex-grow: 1;
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .card-author, .card-category {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .card-stats {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            color: #333;
+        }
+        .stat-item i {
+            color: #198754;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="Layout/header :: header"></div>
+
+    <section class="admin-main-section">
+        <div class="container-fluid">
+            <div class="row h-100">
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 admin-side-panel h-100">
+                    <h3 class="admin-side-title admin-fade-in">DANH MỤC SÁCH</h3>
+                    <ul class="nav flex-column">
+                        <li class="admin-side-item" th:each="category : ${loaiSachList}">
+                            <a th:href="@{/books(categoryId=${category.maCategory})}"
+                               th:classappend="${category.maCategory == loaiSach?.maCategory} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="${category.tenCategory}">
+                                <i th:switch="${category.tenCategory}">
+                                    <i th:case="'Sách nói'" class="fas fa-headphones"></i>
+                                    <i th:case="'Sách giấy'" class="fas fa-book"></i>
+                                    <i th:case="'Sách điện tử'" class="fas fa-tablet-alt"></i>
+                                    <i th:case="'Sách tương tác'" class="fas fa-mouse-pointer"></i>
+                                    <i th:case="'Truyện tranh / Minh họa'" class="fas fa-palette"></i>
+                                    <i th:case="'Sách đa phương tiện'" class="fas fa-photo-video"></i>
+                                    <i th:case="'Sách bỏ túi'" class="fas fa-book-reader"></i>
+                                    <i th:case="'Sách song ngữ'" class="fas fa-language"></i>
+                                    <i th:case="'Sách luyện tập'" class="fas fa-edit"></i>
+                                    <i th:case="*" class="fas fa-book"></i>
+                                </i>
+                                <span th:text="${category.tenCategory}">Danh mục</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-9 col-lg-10 admin-main-content h-100">
+                    <div class="admin-content-card admin-content-wrapper h-100 d-flex flex-column">
+                        <!-- Book Display -->
+
+                        <div class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 10px;">
+<div class="admin-section-title">
+                            <h2 th:text="${loaiSach != null ? 'Sách thuộc danh mục: ' + loaiSach.tenCategory : 'Sách theo danh mục'}">Sách theo danh mục</h2>
+                        </div>
+                            <form class="d-flex" th:action="@{/books(categoryId=${loaiSach?.maCategory})}" method="get">
+                                <input class="form-control me-2" type="search" name="keyword" placeholder="Tìm kiếm sách..." th:value="${keyword}"/>
+                                <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+                            </form>
+                        </div>
+
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-4">
+                            <div class="col" th:each="book : ${sachList}">
+                                <a th:href="@{/sach/chitiet/{id}(id=${book.maSach})}" class="book-card-link">
+                                    <div class="book-card">
+                                        <div class="book-image">
+                                            <img th:src="${book.hinhAnh != null ? book.hinhAnh : '/Image/default-book.jpg'}"
+                                                 class="card-img-top"
+                                                 th:alt="${book.tenSach}"/>
+                                            <div class="book-hover">
+                                                <span class="btn-view"><i class="fas fa-eye"></i> Xem chi tiết</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <h5 class="card-title" th:text="${book.tenSach}">Tên sách</h5>
+                                            <p class="card-author" th:text="${book.tacGia != null ? book.tacGia.tenTacGia : 'Không rõ tác giả'}">Tác giả</p>
+                                            <p class="card-category" th:text="${book.danhMuc != null ? book.danhMuc.tenLoai : 'Chưa phân loại'}">Danh mục</p>
+                                            <div class="card-stats">
+                                                <div class="stat-item">
+                                                    <i class="fas fa-book"></i>
+                                                    <span th:text="${book.soLuong != null ? book.soLuong : 0}">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-12 text-center" th:if="${#lists.isEmpty(sachList)}">
+                                <i class="fas fa-book-open empty-icon mb-2"></i>
+                                <p>Chưa có sách trong danh mục này.</p>
+                            </div>
+                        </div>
+
+                        <div class="admin-add-btn-container">
+                            <a href="/books" class="admin-add-btn">
+                                <i class="fas fa-arrow-right"></i> Xem tất cả danh mục
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div th:replace="Layout/footer :: footer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

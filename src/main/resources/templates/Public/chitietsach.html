@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="${sach.tenSach} + ' - Thư viện điện tử FPT Polytechnic'">Chi tiết sách</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/Css/layout.css" />
+    <link rel="icon" type="image/png" href="/Image/logolibary.png">
+
+    <style>
+        body {
+            padding-top: 60px;
+        }
+        .img-fluid.rounded {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .btn-lg {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .btn-success {
+            background-color: #198754;
+            border-color: #198754;
+            transition: all 0.3s ease;
+        }
+        .btn-success:hover {
+            background-color: #146c43;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 135, 84, 0.2);
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            transition: all 0.3s ease;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.2);
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.2);
+        }
+        #rating-stars {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-start;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #ddd;
+            user-select: none;
+        }
+        #rating-stars .star {
+            transition: color 0.3s ease;
+        }
+        #rating-stars .star.selected,
+        #rating-stars .star:hover,
+        #rating-stars .star:hover ~ .star {
+            color: #ffc107 !important;
+        }
+        .book-review-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .comments-list {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .comment {
+            margin-bottom: 15px;
+        }
+        .comment strong {
+            color: #333;
+        }
+        .comment .text-warning {
+            font-size: 1.2rem;
+        }
+        .comment p {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .comment small {
+            color: #999;
+        }
+        .form-control {
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #198754;
+            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @media (max-width: 768px) {
+            .btn-lg {
+                width: 100% !important;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="Layout/header :: header"></div>
+
+    <div class="container my-5">
+        <div class="row">
+            <!-- Ảnh sách -->
+            <div class="col-md-4">
+                <img th:src="${sach.hinhAnh != null ? sach.hinhAnh : '/Image/default-book.jpg'}" 
+                     class="img-fluid rounded" 
+                     th:alt="${sach.tenSach}" />
+            </div>
+
+            <!-- Thông tin sách -->
+            <div class="col-md-8">
+                <h2 th:text="${sach.tenSach}">Tiêu đề sách</h2>
+                <p><strong>Tác giả:</strong> <span th:text="${sach.tacGia != null ? sach.tacGia.tenTacGia : 'Không rõ tác giả'}"></span></p>
+                <p><strong>Thể loại:</strong> <span th:text="${sach.danhMuc != null ? sach.danhMuc.tenLoai : 'Chưa phân loại'}"></span></p>
+                <p><strong>Số lượng:</strong> 
+                    <span th:text="${sach.soLuong != null ? sach.soLuong : 0} + ' / ' + ${sach.soLuong != null ? sach.soLuong : 0}"></span>
+                </p>
+                <p><strong>Ngày xuất bản:</strong> <span th:text="${sach.namXB != null ? sach.namXB : 'Chưa cập nhật'}"></span></p>
+                <div class="mt-4">
+                    <a th:href="@{/sach/sachchitiet/{id}(id=${sach.maSach})}" 
+                       class="btn btn-success btn-lg me-2" 
+                       style="width: 150px; font-size: 14px;">
+                        <i class="fas fa-play"></i> Đọc từ đầu
+                    </a>
+                    <a href="#" class="btn btn-danger btn-lg me-2" style="width: 150px; font-size: 14px;">
+                        <i class="fas fa-heart"></i> Theo dõi
+                    </a>
+                    <a href="#" class="btn btn-primary btn-lg" style="width: 150px; font-size: 14px;">
+                        <i class="fas fa-thumbs-up"></i> Thích
+                    </a>
+                </div>
+                <hr />
+                <h5>Giới thiệu sách</h5>
+                <p th:text="${sach.moTa != null ? sach.moTa : 'Chưa có thông tin giới thiệu cho sách này.'}"></p>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="/sach" class="btn btn-success btn-lg">
+                <i class="fas fa-book"></i> Quay lại danh sách sách
+            </a>
+        </div>
+    </div>
+
+    <!-- Container đánh giá -->
+    <div class="container my-5">
+        <div class="row">
+            <!-- Bên trái: Form đánh giá -->
+            <div class="col-md-6 mb-4">
+                <div class="book-review-form p-4 border rounded shadow-sm">
+                    <h5 class="mb-3">Viết đánh giá của bạn:</h5>
+                    <form th:action="@{/sach/chitiet/{id}/danhgia(id=${sach.maSach})}" 
+                          th:object="${newDanhGia}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label d-block fw-semibold mb-2">Đánh giá sao:</label>
+                            <div id="rating-stars">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                            <input type="hidden" th:field="*{soSao}" id="rating" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="nguoiDanhGia" class="form-label fw-semibold">Tên của bạn:</label>
+                            <input type="text" class="form-control" th:field="*{nguoiDanhGia}" 
+                                   id="nguoiDanhGia" placeholder="Nhập tên của bạn" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="noiDung" class="form-label fw-semibold">Bình luận:</label>
+                            <textarea class="form-control" th:field="*{noiDung}" id="noiDung" 
+                                      rows="4" placeholder="Viết bình luận của bạn..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Gửi đánh giá</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bên phải: Bình luận người khác -->
+            <div class="col-md-6">
+                <div class="comments-list p-4 border rounded shadow-sm">
+                    <h5 class="mb-3">Bình luận của người khác:</h5>
+                    <div th:each="danhGia : ${danhGias}" class="comment mb-3">
+                        <div class="d-flex align-items-center mb-1">
+                            <strong th:text="${danhGia.nguoiDanhGia}">Người dùng</strong>
+                            <span class="ms-3 text-warning" th:utext="'★'.repeat(${danhGia.soSao}) + '☆'.repeat(5 - ${danhGia.soSao})"></span>
+                        </div>
+                        <p th:text="${danhGia.noiDung}">Nội dung bình luận</p>
+                        <small class="text-muted" th:text="${#temporals.format(danhGia.ngayDanhGia, 'dd/MM/yyyy')}"></small>
+                    </div>
+                    <div th:if="${#lists.isEmpty(danhGias)}" class="text-center text-muted mt-4">
+                        Chưa có bình luận nào.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stars = document.querySelectorAll('#rating-stars .star');
+        const ratingInput = document.getElementById('rating');
+
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const val = star.getAttribute('data-value');
+                ratingInput.value = val;
+                highlightStars(val);
+            });
+            star.addEventListener('mouseover', () => {
+                const val = star.getAttribute('data-value');
+                highlightStars(val);
+            });
+            star.addEventListener('mouseout', () => {
+                const val = ratingInput.value || 0;
+                highlightStars(val);
+            });
+        });
+
+        function highlightStars(rating) {
+            stars.forEach(star => {
+                const starValue = star.getAttribute('data-value');
+                star.classList.toggle('selected', starValue <= rating);
+            });
+        }
+
+        // Khởi tạo trạng thái ban đầu
+        highlightStars(ratingInput.value || 0);
+    </script>
+
+    <div th:replace="Layout/footer :: footer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

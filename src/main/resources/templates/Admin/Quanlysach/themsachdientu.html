@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="vi">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Thêm Sách - Thư viện điện tử FPT Polytechnic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/Image/logolibary.png">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #198754 0%, #764ba2 100%); min-height: 100vh; padding: 2rem 0; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .header-section { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .page-title { color: #2d3748; font-weight: 700; font-size: 2.5rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem; }
+        .page-title i { color: #198754; font-size: 2rem; }
+        .breadcrumb { background: none; padding: 0; margin: 0; font-size: 0.95rem; }
+        .breadcrumb-item a { color: #198754; text-decoration: none; font-weight: 500; }
+        .breadcrumb-item.active { color: #718096; }
+        .form-wrapper { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 3rem; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .section-card { background: rgba(248, 250, 252, 0.8); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.3s ease; }
+        .section-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
+        .section-title { color: #2d3748; font-weight: 600; font-size: 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; padding-bottom: 1rem; border-bottom: 2px solid #e2e8f0; }
+        .section-title i { color: #198754; font-size: 1.1rem; }
+        .form-label { font-weight: 600; color: #4a5568; margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .form-control, .form-select { border: 2px solid #e2e8f0; border-radius: 12px; padding: 0.875rem 1rem; font-size: 0.95rem; transition: all 0.3s ease; background: rgba(255, 255, 255, 0.9); }
+        .form-control:focus, .form-select:focus { border-color: #198754; box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25); background: white; }
+        .form-control.is-invalid { border-color: #e53e3e; }
+        .invalid-feedback { display: none; color: #e53e3e; font-size: 0.875rem; margin-top: 0.25rem; }
+        .form-control.is-invalid ~ .invalid-feedback, .form-select.is-invalid ~ .invalid-feedback { display: block; }
+        .required-mark { color: #e53e3e; font-weight: 600; }
+        .btn-primary { background: linear-gradient(135deg, #198754 0%, #764ba2 100%); border: none; padding: 0.875rem 2rem; font-weight: 600; border-radius: 12px; transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3); }
+        .btn-secondary { background: #718096; border: none; padding: 0.875rem 2rem; font-weight: 600; border-radius: 12px; transition: all 0.3s ease; }
+        .btn-secondary:hover { background: #4a5568; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(113, 128, 150, 0.3); }
+        .btn-back { background: rgba(113, 128, 150, 0.1); color: #4a5568; border: 2px solid #e2e8f0; padding: 0.75rem 1.5rem; font-weight: 600; border-radius: 12px; text-decoration: none; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-back:hover { background: #718096; color: white; border-color: #718096; transform: translateY(-2px); }
+        .image-preview-container { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
+        .image-preview { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #e2e8f0; }
+        @media (max-width: 768px) { body { padding: 1rem 0; } .form-wrapper { padding: 2rem 1.5rem; } .section-card { padding: 1.5rem; } .page-title { font-size: 2rem; } .header-section { padding: 1.5rem; } }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-in { animation: slideInUp 0.6s ease-out; }
+        .action-buttons { background: rgba(248, 250, 252, 0.8); border-radius: 16px; padding: 2rem; text-align: center; border: 1px solid rgba(226, 232, 240, 0.8); }
+        .action-buttons .btn { margin: 0.5rem; min-width: 150px; }
+        .page-section { border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="container animate-slide-in">
+        <div class="header-section">
+            <div class="d-flex justify-content-between align-items-start flex-wrap">
+                <div>
+                    <h1 class="page-title">
+                        <i class="fas fa-book"></i>
+                        <span th:text="${sach.maSach != null} ? 'Sửa Sách' : 'Thêm Sách'">Thêm Sách</span>
+                    </h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/admin/quanlysach">Quản lý sách</a></li>
+                            <li class="breadcrumb-item active" aria-current="page" th:text="${sach.maSach != null} ? 'Sửa sách' : 'Thêm sách'">Thêm sách</li>
+                        </ol>
+                    </nav>
+                </div>
+                <a href="/admin/quanlysach" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>Quay lại
+                </a>
+            </div>
+        </div>
+
+
+     <div class="form-wrapper">
+        <form th:action="@{/admin/quanlysach/themsachdientu}"
+      th:object="${sach}"
+      method="post"
+      enctype="multipart/form-data"
+      class="needs-validation"
+      novalidate>
+
+    <input type="hidden" th:field="*{maSach}" />
+
+    <div class="row">
+        <!-- THÔNG TIN SÁCH -->
+        <div class="col-lg-8">
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-book"></i> Thông tin sách</h3>
+                <div class="row">
+
+                    <!-- Tên sách -->
+                    <div class="col-md-6 mb-3">
+                        <label for="tenSach" class="form-label">Tên sách <span class="required-mark">*</span></label>
+                        <input type="text" id="tenSach" name="tenSach" th:field="*{tenSach}" class="form-control" placeholder="Nhập tên sách" required />
+                        <div class="invalid-feedback">Vui lòng nhập tên sách (tối thiểu 2 ký tự).</div>
+                    </div>
+
+                    <!-- Loại sách -->
+                    <div class="col-md-6 mb-3">
+                        <label for="loaiSach" class="form-label">Loại sách <span class="required-mark">*</span></label>
+                        <select id="loaiSach" name="loaiSach.maLoaiSach" class="form-select" required>
+                            <option value="" disabled selected>Chọn loại sách</option>
+                            <option value="11" selected>Sách điện tử</option>
+                        </select>
+                        <div class="invalid-feedback">Vui lòng chọn loại sách.</div>
+                    </div>
+
+                    <!-- Danh mục -->
+                    <div class="col-md-6 mb-3">
+                        <label for="danhMuc" class="form-label">Danh mục <span class="required-mark">*</span></label>
+                        <select id="danhMuc" th:field="*{danhMuc.maDanhMuc}" class="form-select" required>
+                            <option value="" disabled selected>Chọn danh mục</option>
+                            <option th:each="dm : ${danhMucs}" th:value="${dm.maDanhMuc}" th:text="${dm.tenDanhMuc}"></option>
+                        </select>
+                        <div class="invalid-feedback">Vui lòng chọn danh mục.</div>
+                    </div>
+
+                    <!-- Tác giả -->
+                    <div class="col-md-6 mb-3">
+                        <label for="tacGia" class="form-label">Tác giả <span class="required-mark">*</span></label>
+                        <select id="tacGia" th:field="*{tacGia.maTacGia}" class="form-select" required>
+                            <option value="" disabled selected>Chọn tác giả</option>
+                            <option th:each="tg : ${tacGias}" th:value="${tg.maTacGia}" th:text="${tg.tenTacGia}"></option>
+                        </select>
+                        <div class="invalid-feedback">Vui lòng chọn tác giả.</div>
+                    </div>
+
+                    <!-- Nhà xuất bản -->
+                    <div class="col-md-6 mb-3">
+                        <label for="nhaXuatBan" class="form-label">Nhà xuất bản <span class="required-mark">*</span></label>
+                        <select id="nhaXuatBan" th:field="*{nhaXuatBan.maNXB}" class="form-select" required>
+                            <option value="" disabled selected>Chọn nhà xuất bản</option>
+                            <option th:each="nxb : ${nhaXuatBans}" th:value="${nxb.maNXB}" th:text="${nxb.tenNXB}"></option>
+                        </select>
+                        <div class="invalid-feedback">Vui lòng chọn nhà xuất bản.</div>
+                    </div>
+
+                    <!-- Năm xuất bản -->
+                    <div class="col-md-6 mb-3">
+                        <label for="namXB" class="form-label">Năm xuất bản <span class="required-mark">*</span></label>
+                        <input type="number" id="namXB" name="namXB" th:field="*{namXB}" class="form-control" placeholder="Nhập năm xuất bản" required />
+                        <div class="invalid-feedback">Vui lòng nhập năm xuất bản hợp lệ.</div>
+                    </div>
+
+                    <!-- Số lượng -->
+                    <div class="col-md-6 mb-3">
+                        <input type="hidden" id="soLuong" th:field="*{soLuong}" value="1" />
+                    </div>
+
+                    <!-- Hình ảnh bìa -->
+                    <div class="col-md-6 mb-3">
+                        <label for="coverImage" class="form-label">Hình ảnh bìa sách <span class="required-mark">*</span></label>
+                        <input type="file" id="coverImage" name="coverImage" class="form-control" accept="image/*" th:attr="required=${sach.maSach == null}" />
+                        <div class="invalid-feedback">Vui lòng chọn hình ảnh bìa sách.</div>
+                        <div th:if="${sach.hinhAnh}" class="mt-2 image-preview-container">
+                            <img th:src="@{${sach.hinhAnh}}" class="image-preview" alt="Ảnh bìa hiện tại" />
+                        </div>
+                    </div>
+
+                    <!-- Mô tả -->
+                    <div class="col-12 mb-3">
+                        <label for="moTa" class="form-label">Mô tả</label>
+                        <textarea id="moTa" name="moTa" th:field="*{moTa}" class="form-control" rows="4" placeholder="Nhập mô tả sách"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI - ẢNH NỘI DUNG TRANG -->
+        <div class="col-lg-4">
+            <div id="page-container">
+                <div class="page-section mb-3" data-index="0">
+                    <div class="mb-3">
+    <label for="trangSachImages" class="form-label">
+        Hình ảnh nội dung trang sách <span class="required-mark">*</span>
+    </label>
+    <input type="file"
+           id="trangSachImages"
+           name="trangSachImages"
+           class="form-control page-image"
+           accept="image/*"
+           multiple
+           th:required="${sach.maSach == null}" />
+    <div class="invalid-feedback">Vui lòng chọn ít nhất một hình ảnh.</div>
+    <div class="image-preview-container" data-index="0"></div>
+</div>
+
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <h3 class="section-title"><i class="fas fa-save"></i> Thao tác</h3>
+                <div class="d-flex flex-column gap-3">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Lưu</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()"><i class="fas fa-trash me-2"></i>Xóa form</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                           
+                     
+            </form>
+        </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+
+    window.addEventListener('DOMContentLoaded', function() {
+    const loaiSachSelect = document.getElementById('loaiSach');
+    const danhMucSelect = document.getElementById('danhMuc');
+    const selectedLoaiSach = /*[[${selectedLoaiSach}]]*/ null;
+    const selectedDanhMuc = /*[[${sach.danhMuc?.maDanhMuc}]]*/ null;
+
+    if (selectedLoaiSach) {
+        loaiSachSelect.value = selectedLoaiSach;
+
+        danhMucSelect.innerHTML = `<option value="" disabled selected>Đang tải...</option>`;
+        
+        fetch(`/admin/quanlysach/danhmuc-by-loaisach?maLoaiSach=${selectedLoaiSach}`)
+            .then(response => response.json())
+            .then(data => {
+                danhMucSelect.innerHTML = '<option value="" disabled selected>Chọn danh mục</option>';
+                data.forEach(danhMuc => {
+                    const option = document.createElement("option");
+                    option.value = danhMuc.maDanhMuc;
+                    option.textContent = danhMuc.tenDanhMuc;
+                    danhMucSelect.appendChild(option);
+                });
+
+                // Gán selected sau khi đã load xong
+                if (selectedDanhMuc) {
+                    danhMucSelect.value = selectedDanhMuc;
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi load danh mục:', error);
+                danhMucSelect.innerHTML = '<option value="" disabled selected>Không thể tải danh mục</option>';
+            });
+    }
+});
+
+
+        function attachImagePreviewListener(input) {
+            input.addEventListener('change', function() {
+                const previewContainer = input.parentElement.querySelector('.image-preview-container');
+                previewContainer.innerHTML = '';
+                const files = input.files;
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.className = 'image-preview';
+                        img.src = URL.createObjectURL(file);
+                        previewContainer.appendChild(img);
+                    }
+                }
+            });
+        }
+
+        // Handle LoaiSach selection change
+        document.getElementById('loaiSach').addEventListener('change', function() {
+            const loaiSachId = this.value;
+            const danhMucSelect = document.getElementById('danhMuc');
+            danhMucSelect.innerHTML = '<option value="" disabled selected>Chọn danh mục</option>';
+
+            if (loaiSachId) {
+                fetch('/admin/quanlysach/danhmuc-by-loaisach?maLoaiSach=' + loaiSachId)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.length === 0) {
+                            showNotification('Không có danh mục nào cho loại sách này!', 'warning');
+                        } else {
+                            data.forEach(danhMuc => {
+                                const option = document.createElement('option');
+                                option.value = danhMuc.maDanhMuc;
+                                option.textContent = danhMuc.tenDanhMuc;
+                                danhMucSelect.appendChild(option);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching DanhMuc:', error);
+                        showNotification('Không thể tải danh mục. Vui lòng thử lại!', 'error');
+                    });
+            } else {
+                showNotification('Vui lòng chọn loại sách trước!', 'warning');
+            }
+        });
+
+        // Pre-select LoaiSach and load DanhMuc for edit mode
+        window.addEventListener('DOMContentLoaded', function() {
+            const loaiSachSelect = document.getElementById('loaiSach');
+            const danhMucSelect = document.getElementById('danhMuc');
+            const selectedLoaiSach = /*[[${selectedLoaiSach}]]*/ null;
+            const selectedDanhMuc = /*[[${sach.danhMuc?.maDanhMuc}]]*/ null;
+
+            if (selectedLoaiSach) {
+                loaiSachSelect.value = selectedLoaiSach;
+                loaiSachSelect.dispatchEvent(new Event('change'));
+                if (selectedDanhMuc) {
+                    setTimeout(() => {
+                        danhMucSelect.value = selectedDanhMuc;
+                    }, 500);
+                }
+            }
+        });
+
+        // Attach image preview listeners
+        document.querySelectorAll('.page-image').forEach(input => {
+            attachImagePreviewListener(input);
+        });
+
+        // Form validation
+        (function() {
+            'use strict';
+            const form = document.querySelector('.needs-validation');
+            form.addEventListener('submit', function(event) {
+                let isValid = true;
+
+                document.querySelectorAll('.form-control, .form-select').forEach(input => {
+                    input.classList.remove('is-invalid');
+                });
+
+                const tenSach = document.getElementById('tenSach');
+                if (tenSach.value.length < 2) {
+                    isValid = false;
+                    tenSach.classList.add('is-invalid');
+                }
+
+                const loaiSach = document.getElementById('loaiSach');
+                if (!loaiSach.value) {
+                    isValid = false;
+                    loaiSach.classList.add('is-invalid');
+                }
+
+                const danhMuc = document.getElementById('danhMuc');
+                if (!danhMuc.value) {
+                    isValid = false;
+                    danhMuc.classList.add('is-invalid');
+                }
+
+                const tacGia = document.getElementById('tacGia');
+                if (!tacGia.value) {
+                    isValid = false;
+                    tacGia.classList.add('is-invalid');
+                }
+
+                const nhaXuatBan = document.getElementById('nhaXuatBan');
+                if (!nhaXuatBan.value) {
+                    isValid = false;
+                    nhaXuatBan.classList.add('is-invalid');
+                }
+
+                const namXB = document.getElementById('namXB');
+                if (!namXB.value || namXB.value <= 0 || namXB.value > new Date().getFullYear()) {
+                    isValid = false;
+                    namXB.classList.add('is-invalid');
+                }
+
+                const soLuong = document.getElementById('soLuong');
+                if (!soLuong.value || soLuong.value <= 0) {
+                    isValid = false;
+                    soLuong.classList.add('is-invalid');
+                }
+
+                const hinhAnh = document.getElementById('hinhAnh');
+                if (!hinhAnh.files.length && !/*[[${sach.hinhAnh}]]*/ null) {
+                    isValid = false;
+                    hinhAnh.classList.add('is-invalid');
+                }
+
+                document.querySelectorAll('.page-section').forEach(page => {
+                    const hinhAnhs = page.querySelector('input[name$=".hinhAnhs"]');
+                    if (!hinhAnhs.files.length && !/*[[${sach.maSach}]]*/ null) {
+                        isValid = false;
+                        hinhAnhs.classList.add('is-invalid');
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    showNotification('Vui lòng điền đầy đủ thông tin bắt buộc và kiểm tra lại các trường có lỗi!', 'error');
+                }
+
+                form.classList.add('was-validated');
+            }, false);
+        })();
+
+        function clearForm() {
+            if (!confirm('Bạn có chắc chắn muốn xóa dữ liệu trong form?')) {
+                return;
+            }
+            const form = document.querySelector('form');
+            form.reset();
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('.image-preview-container').forEach(container => {
+                container.innerHTML = '';
+            });
+            document.getElementById('danhMuc').innerHTML = '<option value="" disabled selected>Chọn danh mục</option>';
+            showNotification('Đã xóa dữ liệu form!', 'success');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'error' ? 'danger' : type === 'warning' ? 'warning' : 'success'} position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'check-circle'} me-2"></i>
+                    ${message}
+                </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                document.querySelector('form').submit();
+            }
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                if (confirm('Bạn có chắc chắn muốn đặt lại form?')) {
+                    clearForm();
+                }
+            }
+            if (e.key === 'Escape') {
+                if (confirm('Bạn có muốn quay lại trang danh sách?')) {
+                    window.location.href = '/admin/quanlysach';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

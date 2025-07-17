@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="vi">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sách Đang Mượn - Thư viện điện tử FPT Polytechnic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/Image/logolibary.png">
+    <link rel="stylesheet" href="/css/layout.css">
+    <style>
+        /* === RESET AND GLOBAL STYLES === */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        /* === COMMON SECTION STYLES === */
+        .followed-books-section, .borrowed-books-section {
+            padding: 100px 0 50px; /* Increased padding-top to 100px to clear the fixed header */
+            background: #f8f9fa;
+        }
+
+        .followed-books-container, .borrowed-books-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-title h2 {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .title-line {
+            width: 80px;
+            height: 3px;
+            background: #198754;
+            margin: 0 auto;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background: #198754;
+            color: white;
+            font-weight: 500;
+            text-align: center;
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        .table td {
+            vertical-align: middle;
+            padding: 12px;
+        }
+
+        .book-title {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .book-title:hover {
+            color: #198754;
+            text-decoration: underline;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .table .btn-sm {
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+        }
+
+        .table .btn-unwatch, .table .btn-return {
+            background-color: #198754;
+            border-color: #198754;
+        }
+
+        .table .btn-unwatch:hover, .table .btn-return:hover {
+            background-color: #146c43;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 135, 84, 0.2);
+        }
+
+        .table .btn-extend {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #333;
+        }
+
+        .table .btn-extend:hover {
+            background-color: #e0a800;
+            border-color: #e0a800;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.2);
+        }
+
+        .empty-books {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-books i {
+            font-size: 3rem;
+            color: #198754;
+            margin-bottom: 20px;
+        }
+
+        /* === RESPONSIVE ADJUSTMENTS === */
+        @media (max-width: 768px) {
+            .followed-books-section, .borrowed-books-section {
+                padding: 80px 0 40px; /* Slightly reduced padding-top for mobile */
+            }
+
+            .followed-books-container, .borrowed-books-container {
+                padding: 20px;
+            }
+
+            .table th, .table td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .table .btn-sm {
+                padding: 6px 15px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .table th, .table td {
+                font-size: 0.8rem;
+            }
+
+            .table .btn-sm {
+                padding: 5px 10px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="Layout/header :: header"></div>
+
+    <section class="borrowed-books-section">
+        <div class="container">
+            <div class="borrowed-books-container">
+                <div class="section-title">
+                    <h2>SÁCH ĐANG MƯỢN</h2>
+                    <div class="title-line"></div>
+                </div>
+                <div th:if="${not #lists.isEmpty(borrowedBooks)}" class="table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">STT</th>
+                                <th scope="col">Tên sách</th>
+                                <th scope="col">Tác giả</th>
+                                <th scope="col">Thể loại</th>
+                                <th scope="col">Ngày mượn</th>
+                                <th scope="col">Ngày trả dự kiến</th>
+                                <th scope="col">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="book, iterStat : ${borrowedBooks}">
+                                <td th:text="${iterStat.count}"></td>
+                                <td>
+                                    <a th:href="@{/product/{id}(id=${book.bookId})}" th:text="${book.title}" class="book-title"></a>
+                                </td>
+                                <td th:text="${book.author != null ? book.author : 'Không rõ tác giả'}"></td>
+                                <td th:text="${book.category.categoryName}"></td>
+                                <td th:text="${#dates.format(book.borrowDate, 'dd/MM/yyyy')}"></td>
+                                <td th:text="${#dates.format(book.dueDate, 'dd/MM/yyyy')}"></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a th:href="@{/extend-book/{id}(id=${book.borrowId})}" class="btn btn-warning btn-sm btn-extend">Gia hạn</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:if="${#lists.isEmpty(borrowedBooks)}" class="empty-books">
+                    <i class="fas fa-book-open fa-3x text-secondary"></i>
+                    <p class="mt-2">Bạn chưa mượn sách nào.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div th:replace="Layout/footer :: footer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
