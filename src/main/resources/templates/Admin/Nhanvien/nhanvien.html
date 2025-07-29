@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Nhân viên - Thư viện điện tử FPT Polytechnic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="/Css/admin.css" rel="stylesheet" />
+    <link href="/Css/style.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="/Image/logolibary.png">
+</head>
+<body>
+    <div th:replace="Layout/header :: header"></div>
+
+    <section class="admin-main-section">
+        <div class="container-fluid">
+            <div class="row h-100">
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 admin-side-panel h-100">
+                    <h3 class="admin-side-title admin-fade-in">QUẢN TRỊ</h3>
+                    <ul class="nav flex-column">
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/docgia}"
+                               th:classappend="${activeSection == 'docgia'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="docgia">
+                                <i class="fas fa-users"></i> Quản lý độc giả
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/tacgia}"
+                               th:classappend="${activeSection == 'tacgia'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="tacgia">
+                                <i class="fa-solid fa-user-tie"></i></i> Quản lý tác giả
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/quanlysach}"
+                               th:classappend="${activeSection == 'quanlysach'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="quanlysach">
+                                <i class="fas fa-book"></i> Quản lý sách và phân loại
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/kesach}"
+                               th:classappend="${activeSection == 'kesach'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="kesach">
+                                <i class="fas fa-book-open"></i> Quản lý kệ sách
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/nhapmuon}"
+                               th:classappend="${activeSection == 'nhapmuon'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="nhapmuon">
+                                <i class="fas fa-exchange-alt"></i> Quản lý phiếu mượn
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/thongbao}"
+                               th:classappend="${activeSection == 'thongbao'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="thongbao">
+                                <i class="fas fa-bell"></i> Quản lý thông báo
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/danhgia}"
+                               th:classappend="${activeSection == 'danhgia'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="danhgia">
+                                <i class="fas fa-star"></i> Quản lý đánh giá
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/nhanvien}"
+                               th:classappend="${activeSection == 'nhanvien'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="nhanvien">
+                                <i class="fas fa-user-tie"></i> Quản lý nhân viên
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/thongke}"
+                               th:classappend="${activeSection == 'thongke'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="thongke">
+                                <i class="fas fa-chart-bar"></i> Thống kê
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/lichsu}"
+                               th:classappend="${activeSection == 'lichsu'} ? 'admin-side-link active' : 'admin-side-link'"
+                               data-section="lichsu">
+                                <i class="fas fa-history"></i> Lịch sử
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-9 col-lg-10 admin-main-content h-100">
+                    <div class="admin-content-card h-100 d-flex flex-column">
+                        <div class="admin-section-title">
+                            <h2>QUẢN LÝ NHÂN VIÊN</h2>
+                        </div>
+
+                        <div class="management-section">
+                            <!-- Search -->
+                            <div class="d-flex justify-content-between align-items-center flex-wrap p-2">
+                                <h3 class="mb-2">Danh sách nhân viên</h3>
+                                <form class="d-flex" th:action="@{/admin/nhanvien}" method="get">
+                                    <input class="form-control me-2" type="search" name="nhanVienKeyword"
+                                           placeholder="Tìm kiếm nhân viên..." th:value="${nhanVienKeyword}" />
+                                    <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+                                </form>
+                            </div>
+
+                            <!-- Table -->
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Mã nhân viên</th>
+                                            <th>Tên nhân viên</th>
+                                            <th>Email</th>
+                                            <th>SĐT</th>
+                                            <th>CCCD</th>
+                                            <th>Hành động</th>
+                                           </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="nhanVien : ${nhanVienPage.content}">
+                                            <td th:text="${nhanVien.maNV}"></td>
+                                            <td th:text="${nhanVien.tenNhanVien}"></td>
+                                            <td th:text="${nhanVien.email}"></td>
+                                            <td th:text="${nhanVien.sdt}"></td>
+                                            <td th:text="${#strings.length(nhanVien.cccd) >= 5 ? nhanVien.cccd.substring(0, 3) + '****' + nhanVien.cccd.substring(nhanVien.cccd.length() - 2) : docGia.cccd}"></td>
+                                            <td>
+                                                <a th:href="@{/admin/nhanvien/sua-nhanvien(id=${nhanVien.maNV})}" class="btn btn-sm btn-outline-primary me-1" title="Sửa">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a th:href="@{/admin/nhanvien/xoa-nhanvien(id=${nhanVien.maNV})}" class="btn btn-sm btn-outline-danger" title="Xóa"
+                                                onclick="return confirm('Bạn có chắc muốn xóa độc giả này?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${nhanVienPage.content.empty}">
+                                            <td colspan="11" class="text-center">Không có nhân viên nào.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="admin-add-btn-container">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item" th:classappend="${nhanVienPage.first} ? 'disabled'">
+                                            <a class="page-link"
+                                               th:href="@{/admin/nhanvien(nhanVienPage=${nhanVienPage.number - 1}, nhanVienSize=${nhanVienPage.size}, nhanVienKeyword=${nhanVienKeyword})}">
+                                                Trước
+                                            </a>
+                                        </li>
+                                        <li th:each="i : ${#numbers.sequence(0, nhanVienPage.totalPages - 1)}"
+                                            th:class="${i == nhanVienPage.number} ? 'page-item active' : 'page-item'">
+                                            <a class="page-link"
+                                               th:href="@{/admin/nhanvien(nhanVienPage=${i}, nhanVienSize=${nhanVienPage.size}, nhanVienKeyword=${nhanVienKeyword})}"
+                                               th:text="${i + 1}"></a>
+                                        </li>
+                                        <li class="page-item" th:classappend="${nhanVienPage.last} ? 'disabled'">
+                                            <a class="page-link"
+                                               th:href="@{/admin/nhanvien(nhanVienPage=${nhanVienPage.number + 1}, nhanVienSize=${nhanVienPage.size}, nhanVienKeyword=${nhanVienKeyword})}">
+                                                Sau
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                                <a th:href="@{/admin/nhanvien/them}" class="admin-add-btn">
+                                    <i class="fas fa-plus"></i> Thêm nhân viên
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div th:replace="Layout/footer :: footer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

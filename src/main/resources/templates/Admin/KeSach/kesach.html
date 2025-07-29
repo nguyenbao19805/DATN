@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Kệ sách - Thư viện điện tử FPT Polytechnic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/Css/admin.css">
+    <link rel="stylesheet" href="/Css/style.css">
+    <style>
+        .header-row.table-light {
+            background-color: #eaf4fc;
+            color: #0b5394;
+            font-weight: 600;
+            border-bottom: 2px solid #0b5394;
+            padding: 10px 0;
+            border-radius: 4px;
+        }
+        .accordion-button .row {
+            width: 100%;
+            margin: 0;
+        }
+        .accordion-button .col-2, .accordion-button .col-1 {
+            padding: 6px 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: black;
+        }
+        .accordion-button.collapsed:hover .col-2, .accordion-button.collapsed:hover .col-1 {
+            background-color: #ffffff;
+        }
+        .header-row.table-light > .col-2, .header-row.table-light > .col-1 {
+            font-weight: 700;
+            font-size: 15px;
+            text-align: center;
+            border-right: 1px solid #0b5394;
+        }
+        .accordion-button {
+            background-color: #ffffff;
+            border-top: 1px solid #cfe2f3;
+            border-bottom: 1px solid #cfe2f3;
+        }
+        .accordion-item {
+            border: 1px solid #cfe2f3;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            overflow: hidden;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .header-row > .col-2, .header-row > .col-1 {
+            font-weight: 700;
+            font-size: 15px;
+            text-align: center;
+        }
+        /* Highlight selected accordion item */
+        .accordion-item.active {
+            border-color: #0b5394 !important;
+            box-shadow: 0 0 10px rgba(11, 83, 148, 0.5);
+            background-color: #f8fbff;
+        }
+        /* Ensure accordion button looks consistent when active */
+        .accordion-button:not(.collapsed) {
+            background-color: #eaf4fc;
+            color: #0b5394;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="Layout/header :: header"></div>
+
+    <section class="admin-main-section">
+        <div class="container-fluid">
+            <div class="row h-100">
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 admin-side-panel h-100">
+                    <h3 class="admin-side-title admin-fade-in">QUẢN TRỊ</h3>
+                    <ul class="nav flex-column">
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/docgia}" th:classappend="${activeSection == 'docgia'} ? 'admin-side-link active' : 'admin-side-link'" data-section="docgia">
+                                <i class="fas fa-users"></i> Quản lý độc giả
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/tacgia}" th:classappend="${activeSection == 'tacgia'} ? 'admin-side-link active' : 'admin-side-link'" data-section="tacgia">
+                                <i class="fa-solid fa-user-tie"></i> Quản lý tác giả
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/quanlysach}" th:classappend="${activeSection == 'quanlysach'} ? 'admin-side-link active' : 'admin-side-link'" data-section="quanlysach">
+                                <i class="fas fa-book"></i> Quản lý sách và phân loại
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/kesach}" th:classappend="${activeSection == 'kesach'} ? 'admin-side-link active' : 'admin-side-link'" data-section="kesach">
+                                <i class="fas fa-book-open"></i> Quản lý kệ sách
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/nhapmuon}" th:classappend="${activeSection == 'nhapmuon'} ? 'admin-side-link active' : 'admin-side-link'" data-section="nhapmuon">
+                                <i class="fas fa-exchange-alt"></i> Quản lý phiếu mượn
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/thongbao}" th:classappend="${activeSection == 'thongbao'} ? 'admin-side-link active' : 'admin-side-link'" data-section="thongbao">
+                                <i class="fas fa-bell"></i> Quản lý thông báo
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/danhgia}" th:classappend="${activeSection == 'danhgia'} ? 'admin-side-link active' : 'admin-side-link'" data-section="danhgia">
+                                <i class="fas fa-star"></i> Quản lý đánh giá
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/nhanvien}" th:classappend="${activeSection == 'nhanvien'} ? 'admin-side-link active' : 'admin-side-link'" data-section="nhanvien">
+                                <i class="fas fa-user-tie"></i> Quản lý nhân viên
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/thongke}" th:classappend="${activeSection == 'thongke'} ? 'admin-side-link active' : 'admin-side-link'" data-section="thongke">
+                                <i class="fas fa-table"></i> Thống kê
+                            </a>
+                        </li>
+                        <li class="admin-side-item">
+                            <a th:href="@{/admin/lichsu}" th:classappend="${activeSection == 'lichsu'} ? 'admin-side-link active' : 'admin-side-link'" data-section="lichsu">
+                                <i class="fas fa-history"></i> Lịch sử
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-9 col-lg-10 admin-main-content h-100">
+                    <div class="admin-content-card admin-fade-in h-100 d-flex flex-column">
+                        <div class="admin-section-title">
+                            <h2>QUẢN LÝ KỆ SÁCH</h2>
+                        </div>
+
+                        <!-- Hiển thị thông báo lỗi/success -->
+                        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                            <span th:text="${errorMessage}"></span>
+                        </div>
+                        <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                            <span th:text="${successMessage}"></span>
+                        </div>
+
+                        <div class="management-section">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 10px;">
+                                <h3 class="mb-2 mb-md-0">Danh sách kệ sách</h3>
+                                <form class="d-flex" th:action="@{/admin/kesach}" method="get">
+                                    <input class="form-control me-2" type="search" name="keyword" placeholder="Tìm kiếm kệ sách..." th:value="${keyword}">
+                                    <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+                                </form>
+                            </div>
+                            <div class="accordion" id="keSachAccordion">
+                                <!-- Tiêu đề bảng -->
+                                <div class="container px-0">
+                                    <div class="row w-100 mx-0 header-row bg-light border rounded py-2 text-center">
+                                        <div class="col-2">Mã kệ sách</div>
+                                        <div class="col-2">Tên kệ sách</div>
+                                        <div class="col-2">Vị trí</div>
+                                        <div class="col-2">Sức chứa</div>
+                                        <div class="col-2">Mô tả</div>
+                                        <div class="col-1">Ngày tạo</div>
+                                        <div class="col-1">Hành động</div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item" th:each="keSach : ${keSachPage.content}">
+                                    <h2 class="accordion-header" th:id="'keSachHeader' + ${keSach.maKeSach}">
+                                        <button class="accordion-button collapsed px-0" type="button" data-bs-toggle="collapse"
+                                            th:data-bs-target="'#collapse' + ${keSach.maKeSach}" aria-expanded="false"
+                                            th:aria-controls="'collapse' + ${keSach.maKeSach}">
+                                            <div class="container-fluid px-0">
+                                                <div class="row mx-0 text-center w-100 align-items-center">
+                                                    <div class="col-2" th:text="${keSach.maKeSach}"></div>
+                                                    <div class="col-2" th:text="${keSach.tenKeSach}"></div>
+                                                    <div class="col-2" th:text="${keSach.viTri}"></div>
+                                                    <div class="col-2" th:text="${keSach.currentBooks != null ? keSach.currentBooks : 0} + '/' + ${keSach.sucChua}"></div>
+                                                    <div class="col-2" th:text="${keSach.moTa}"></div>
+                                                    <div class="col-1" th:text="${#temporals.format(keSach.ngayTao, 'dd/MM/yyyy HH:mm')}"></div>
+                                                    <div class="col-1">
+                                                        <a th:href="@{/admin/kesach/edit(id=${keSach.maKeSach})}" class="btn btn-sm btn-outline-primary me-1" title="Sửa kệ sách">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a th:href="@{/admin/kesach/xoa-kesach(id=${keSach.maKeSach})}" class="btn btn-sm btn-outline-danger" title="Xóa kệ sách" th:onclick="'return confirmDelete(' + ${keSach.currentBooks != null ? keSach.currentBooks : 0} + ')'">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div th:id="'collapse' + ${keSach.maKeSach}" class="accordion-collapse collapse" th:aria-labelledby="'keSachHeader' + ${keSach.maKeSach}" data-bs-parent="#keSachAccordion">
+                                        <div class="accordion-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover align-middle">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Mã sách</th>
+                                                            <th>Tên sách</th>
+                                                            <th>Tác giả</th>
+                                                            <th>Vị trí chi tiết</th>
+                                                            <th>Số lượng</th>
+                                                            <th>Ghi chú</th>
+                                                            <th>Hành động</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr th:each="viTri : ${keSach.viTriKeSachs}">
+                                                            <td th:text="${viTri.sach.maSach}"></td>
+                                                            <td th:text="${viTri.sach.tenSach}"></td>
+                                                            <td th:text="${viTri.sach.tacGia?.tenTacGia ?: 'N/A'}"></td>
+                                                            <td th:text="${viTri.viTriChiTiet}"></td>
+                                                            <td th:text="${viTri.soLuong}"></td>
+                                                            <td th:text="${viTri.ghiChu ?: 'N/A'}"></td>
+                                                            <td>
+                                                                <button type="button" class="btn btn-sm btn-outline-danger btn-remove-from-shelf" 
+                                                                        title="Xóa khỏi kệ" 
+                                                                        data-bs-toggle="modal" 
+                                                                        data-bs-target="#removeFromShelfModal"
+                                                                        th:attr="data-vi-tri-id=${viTri.maViTri}, data-ke-sach-id=${keSach.maKeSach}, data-ma-sach=${viTri.sach.maSach}, data-ten-sach=${viTri.sach.tenSach}, data-so-luong=${viTri.soLuong}">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        <tr th:if="${#lists.isEmpty(keSach.viTriKeSachs)}">
+                                                            <td colspan="7" class="text-center">Kệ trống</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:if="${keSachPage.content.isEmpty()}">
+                                    <p class="text-center">Không có kệ sách nào.</p>
+                                </div>
+                            </div>
+                            <div class="admin-add-btn-container">
+                                <nav aria-label="KeSach pagination">
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item" th:classappend="${keSachPage.first} ? 'disabled'">
+                                            <a class="page-link" th:href="@{/admin/kesach(page=${keSachPage.number - 1}, size=${keSachPage.size}, keyword=${keSachKeyword})}" tabindex="-1">Trước</a>
+                                        </li>
+                                        <li th:each="i : ${#numbers.sequence(0, keSachPage.totalPages - 1)}" th:class="${i == keSachPage.number} ? 'page-item active' : 'page-item'">
+                                            <a class="page-link" th:href="@{/admin/kesach(page=${i}, size=${keSachPage.size}, keyword=${keSachKeyword})}" th:text="${i + 1}"></a>
+                                        </li>
+                                        <li class="page-item" th:classappend="${keSachPage.last} ? 'disabled'">
+                                            <a class="page-link" th:href="@{/admin/kesach(page=${keSachPage.number + 1}, size=${keSachPage.size}, keyword=${keSachKeyword})}">Sau</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                                <a th:href="@{/admin/kesach/them}" class="admin-add-btn"><i class="fas fa-plus"></i> Thêm kệ sách</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal xóa sách khỏi kệ -->
+    <div class="modal fade" id="removeFromShelfModal" tabindex="-1" aria-labelledby="removeFromShelfModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeFromShelfModalLabel">Xóa sách khỏi kệ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="removeFromShelfForm" th:action="@{/admin/kesach/remove-from-shelf}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Mã sách</label>
+                            <input type="text" class="form-control" id="modalMaSach" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tên sách</label>
+                            <input type="text" class="form-control" id="modalTenSach" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số lượng trên kệ</label>
+                            <input type="number" class="form-control" id="modalSoLuongHienTai" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modalSoLuongXoa" class="form-label">Số lượng cần xóa</label>
+                            <input type="number" class="form-control" id="modalSoLuongXoa" name="soLuongXoa" min="1" required>
+                        </div>
+                        <input type="hidden" id="modalViTriId" name="viTriId">
+                        <input type="hidden" id="modalKeSachId" name="keSachId">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="removeAllBooks">Xóa toàn bộ</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-danger">Xác nhận</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="Layout/footer :: footer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmDelete(currentBooks) {
+            if (currentBooks > 0) {
+                return confirm('Bạn cần bỏ sách khỏi kệ để xóa kệ này. Bạn có muốn tiếp tục kiểm tra?');
+            }
+            return confirm('Bạn có chắc muốn xóa kệ sách này?');
+        }
+
+        // Xử lý mở modal xóa sách
+        document.querySelectorAll('.btn-remove-from-shelf').forEach(button => {
+            button.addEventListener('click', function() {
+                const viTriId = this.getAttribute('data-vi-tri-id');
+                const keSachId = this.getAttribute('data-ke-sach-id');
+                const maSach = this.getAttribute('data-ma-sach');
+                const tenSach = this.getAttribute('data-ten-sach');
+                const soLuong = this.getAttribute('data-so-luong');
+
+                document.getElementById('modalViTriId').value = viTriId;
+                document.getElementById('modalKeSachId').value = keSachId;
+                document.getElementById('modalMaSach').value = maSach;
+                document.getElementById('modalTenSach').value = tenSach;
+                document.getElementById('modalSoLuongHienTai').value = soLuong;
+                document.getElementById('modalSoLuongXoa').max = soLuong;
+                document.getElementById('modalSoLuongXoa').value = soLuong; // Mặc định chọn xóa toàn bộ
+            });
+        });
+
+        // Xử lý nút "Xóa toàn bộ"
+        document.getElementById('removeAllBooks').addEventListener('click', function() {
+            const soLuongHienTai = document.getElementById('modalSoLuongHienTai').value;
+            document.getElementById('modalSoLuongXoa').value = soLuongHienTai;
+            document.getElementById('removeFromShelfForm').submit();
+        });
+
+        // Kiểm tra số lượng xóa
+        document.getElementById('removeFromShelfForm').addEventListener('submit', function(event) {
+            const soLuongXoa = parseInt(document.getElementById('modalSoLuongXoa').value);
+            const soLuongHienTai = parseInt(document.getElementById('modalSoLuongHienTai').value);
+            if (isNaN(soLuongXoa) || soLuongXoa <= 0 || soLuongXoa > soLuongHienTai) {
+                event.preventDefault();
+                alert('Số lượng xóa không hợp lệ! Vui lòng nhập số từ 1 đến ' + soLuongHienTai);
+            }
+        });
+
+        // Xử lý highlight khi accordion được mở
+        document.querySelectorAll('.accordion-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Loại bỏ class active từ tất cả accordion-item
+                document.querySelectorAll('.accordion-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                // Nếu accordion đang mở, thêm class active cho accordion-item tương ứng
+                if (!this.classList.contains('collapsed')) {
+                    this.closest('.accordion-item').classList.add('active');
+                }
+            });
+        });
+
+        // Loại bỏ highlight khi accordion đóng
+        document.querySelectorAll('.accordion-collapse').forEach(collapse => {
+            collapse.addEventListener('hidden.bs.collapse', function() {
+                this.closest('.accordion-item').classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
