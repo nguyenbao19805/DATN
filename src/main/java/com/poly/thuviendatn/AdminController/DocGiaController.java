@@ -3,7 +3,9 @@ package com.poly.thuviendatn.AdminController;
 import com.poly.thuviendatn.Model.DocGia;
 import com.poly.thuviendatn.Model.TaiKhoan;
 import com.poly.thuviendatn.Repository.DocGiaRepository;
+import com.poly.thuviendatn.Repository.LichSuNapRepository;
 import com.poly.thuviendatn.Repository.TaiKhoanRepository;
+import com.poly.thuviendatn.Repository.TaiKhoanTheRepository;
 import com.poly.thuviendatn.Service.DocGiaService;
 
 import jakarta.validation.Valid;
@@ -18,11 +20,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
+
+
 @Controller
 @RequestMapping("/admin/docgia")
 public class DocGiaController {
+
+    @Autowired
+    private LichSuNapRepository lichSuNapRepository;
+
+    @Autowired
+    private TaiKhoanTheRepository taiKhoanTheRepository;
+
     @Autowired
     private DocGiaService docGiaService;
+
     @Autowired
     private DocGiaRepository docGiaRepository;
 
@@ -58,40 +70,44 @@ public class DocGiaController {
         return "Admin/Docgia/themdocgia";
     }
 
-@PostMapping("/them")
-public String addDocGia(
-        @Valid @ModelAttribute("docGia") DocGia docGia,
-        BindingResult result,
-        Model model,
-        RedirectAttributes redirectAttributes) {
+    @PostMapping("/them")
+    public String addDocGia(
+            @Valid @ModelAttribute("docGia") DocGia docGia,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
-    // Nếu validate từ @Valid có lỗi
-    if (result.hasErrors()) {
-        model.addAttribute("activeSection", "docgia");
-        return "Admin/Docgia/themdocgia";
+        // Nếu validate từ @Valid có lỗi
+        if (result.hasErrors()) {
+            model.addAttribute("activeSection", "docgia");
+            return "Admin/Docgia/themdocgia";
+        }
+
+        // Kiểm tra email đã tồn tại
+        if (docGiaRepository.existsByEmail(docGia.getEmail())) {
+            result.rejectValue("email", "error.docGia", "Email đã tồn tại trong hệ thống.");
+            model.addAttribute("activeSection", "docgia");
+            return "Admin/Docgia/themdocgia";
+        }
+        if (!docGia.getCccd().matches("\\d{12}")) {
+            result.rejectValue("cccd", "error.docGia", "CCCD phải gồm đúng 12 chữ số.");
+            model.addAttribute("activeSection", "docgia");
+            return "Admin/Docgia/themdocgia";
+        }
+        // Kiểm tra CCCD đã tồn tại
+        if (docGiaRepository.existsByCccd(docGia.getCccd())) {
+            result.rejectValue("cccd", "error.docGia", "CCCD đã tồn tại trong hệ thống.");
+            model.addAttribute("activeSection", "docgia");
+            return "Admin/Docgia/themdocgia";
+        }
+        
+
+        // Gọi service xử lý lưu + gửi mail
+        docGiaService.createDocGiaAndSendPassword(docGia);
+
+        redirectAttributes.addFlashAttribute("successMessage", "Thêm độc giả thành công! Mật khẩu đã được gửi qua email.");
+        return "redirect:/admin/docgia";
     }
-
-    // Kiểm tra email đã tồn tại
-    if (docGiaRepository.existsByEmail(docGia.getEmail())) {
-        result.rejectValue("email", "error.docGia", "Email đã tồn tại trong hệ thống.");
-        model.addAttribute("activeSection", "docgia");
-        return "Admin/Docgia/themdocgia";
-    }
-
-    // Kiểm tra CCCD đã tồn tại
-    if (docGiaRepository.existsByCccd(docGia.getCccd())) {
-        result.rejectValue("cccd", "error.docGia", "CCCD đã tồn tại trong hệ thống.");
-        model.addAttribute("activeSection", "docgia");
-        return "Admin/Docgia/themdocgia";
-    }
-    
-
-    // Gọi service xử lý lưu + gửi mail
-    docGiaService.createDocGiaAndSendPassword(docGia);
-
-    redirectAttributes.addFlashAttribute("successMessage", "Thêm độc giả thành công! Mật khẩu đã được gửi qua email.");
-    return "redirect:/admin/docgia";
-}
 
    // 3️⃣ Hiển thị form sửa
     @GetMapping("/sua-docgia")
@@ -108,53 +124,53 @@ public String addDocGia(
     }
 
     // 4️⃣ Xử lý cập nhật độc giả và tài khoản
-@PostMapping("/edit")
-public String updateDocGia(
-        @Valid @ModelAttribute("docGia") DocGia docGia,
-        BindingResult result,
-        Model model,
-        RedirectAttributes redirectAttributes) {
+    @PostMapping("/edit")
+    public String updateDocGia(
+            @Valid @ModelAttribute("docGia") DocGia docGia,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
-    if (result.hasErrors()) {
-        model.addAttribute("activeSection", "docgia");
-        return "Admin/Docgia/themdocgia";
+        if (result.hasErrors()) {
+            model.addAttribute("activeSection", "docgia");
+            return "Admin/Docgia/themdocgia";
+        }
+
+        // Kiểm tra email nếu đã đổi
+        Optional<DocGia> emailDocGia = docGiaRepository.findByEmail(docGia.getEmail());
+        if (emailDocGia.isPresent() && !emailDocGia.get().getMaDocGia().equals(docGia.getMaDocGia())) {
+            result.rejectValue("email", "error.docGia", "Email đã tồn tại trong hệ thống.");
+            model.addAttribute("activeSection", "docgia");
+            return "Admin/Docgia/themdocgia";
+        }
+
+        // Kiểm tra CCCD nếu đã đổi
+        Optional<DocGia> cccdDocGia = docGiaRepository.findByCccd(docGia.getCccd());
+        if (cccdDocGia.isPresent() && !cccdDocGia.get().getMaDocGia().equals(docGia.getMaDocGia())) {
+            result.rejectValue("cccd", "error.docGia", "CCCD đã tồn tại trong hệ thống.");
+            model.addAttribute("activeSection", "docgia");
+            return "Admin/Docgia/themdocgia";
+        }
+
+        // Tiếp tục cập nhật
+        DocGia existingDocGia = docGiaRepository.findById(docGia.getMaDocGia())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy độc giả có ID: " + docGia.getMaDocGia()));
+
+        docGia.setPassword(existingDocGia.getPassword());
+        docGia.setEnabled(existingDocGia.isEnabled());
+
+        docGiaRepository.save(docGia);
+
+        taiKhoanRepository.findById(docGia.getMaDocGia()).ifPresent(taiKhoan -> {
+            taiKhoan.setUsername(docGia.getTenDocGia());
+            taiKhoan.setEmail(docGia.getEmail());
+            taiKhoan.setEnabled(docGia.isEnabled());
+            taiKhoanRepository.save(taiKhoan);
+        });
+
+        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật độc giả và tài khoản thành công!");
+        return "redirect:/admin/docgia";
     }
-
-    // Kiểm tra email nếu đã đổi
-    Optional<DocGia> emailDocGia = docGiaRepository.findByEmail(docGia.getEmail());
-    if (emailDocGia.isPresent() && !emailDocGia.get().getMaDocGia().equals(docGia.getMaDocGia())) {
-        result.rejectValue("email", "error.docGia", "Email đã tồn tại trong hệ thống.");
-        model.addAttribute("activeSection", "docgia");
-        return "Admin/Docgia/themdocgia";
-    }
-
-    // Kiểm tra CCCD nếu đã đổi
-    Optional<DocGia> cccdDocGia = docGiaRepository.findByCccd(docGia.getCccd());
-    if (cccdDocGia.isPresent() && !cccdDocGia.get().getMaDocGia().equals(docGia.getMaDocGia())) {
-        result.rejectValue("cccd", "error.docGia", "CCCD đã tồn tại trong hệ thống.");
-        model.addAttribute("activeSection", "docgia");
-        return "Admin/Docgia/themdocgia";
-    }
-
-    // Tiếp tục cập nhật
-    DocGia existingDocGia = docGiaRepository.findById(docGia.getMaDocGia())
-            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy độc giả có ID: " + docGia.getMaDocGia()));
-
-    docGia.setPassword(existingDocGia.getPassword());
-    docGia.setEnabled(existingDocGia.isEnabled());
-
-    docGiaRepository.save(docGia);
-
-    taiKhoanRepository.findById(docGia.getMaDocGia()).ifPresent(taiKhoan -> {
-        taiKhoan.setUsername(docGia.getTenDocGia());
-        taiKhoan.setEmail(docGia.getEmail());
-        taiKhoan.setEnabled(docGia.isEnabled());
-        taiKhoanRepository.save(taiKhoan);
-    });
-
-    redirectAttributes.addFlashAttribute("successMessage", "Cập nhật độc giả và tài khoản thành công!");
-    return "redirect:/admin/docgia";
-}
 
     // 5️⃣ Xóa độc giả (và tùy chọn xóa luôn tài khoản nếu muốn)
     @GetMapping("/xoa-docgia")
@@ -164,15 +180,63 @@ public String updateDocGia(
             return "redirect:/admin/docgia";
         }
 
-        // Xóa độc giả
+        // Xóa lịch sử nạp nếu có
+        if (lichSuNapRepository.existsById(id)) {
+            lichSuNapRepository.deleteById(id);
+        }
+
+        // Xóa tài khoản thẻ nếu có
+        if (taiKhoanTheRepository.existsById(id)) {
+            taiKhoanTheRepository.deleteById(id);
+        }
+
+        // Xóa tài khoản nếu có
+        if (taiKhoanRepository.existsById(id)) {
+            taiKhoanRepository.deleteById(id);
+        }
+
+        // Xóa độc giả cuối cùng
         docGiaRepository.deleteById(id);
 
-        // Tùy chọn: Xóa tài khoản luôn nếu cần
-        taiKhoanRepository.deleteById(id);
-
-        redirectAttributes.addFlashAttribute("successMessage", "Xóa độc giả và tài khoản thành công!");
+        redirectAttributes.addFlashAttribute("successMessage", "Xóa độc giả và tất cả liên quan thành công!");
         return "redirect:/admin/docgia";
     }
 
+
     
+
+    @GetMapping("/naptien")
+    public String showNapTienForm(@RequestParam("id") Integer maTaiKhoan, Model model) {
+        model.addAttribute("maTaiKhoan", maTaiKhoan);
+
+        // ✅ Lấy thông tin tài khoản từ mã tài khoản
+        Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findByMaTaiKhoan(maTaiKhoan);
+        if (optionalTaiKhoan.isPresent()) {
+            TaiKhoan taiKhoan = optionalTaiKhoan.get();
+            model.addAttribute("username", taiKhoan.getUsername()); // hoặc getHoTen() nếu có
+        } else {
+            model.addAttribute("username", "Không rõ");
+        }
+
+        return "Admin/Docgia/naptien";
+    }
+
+
+    @PostMapping("/naptien")
+    public String napTien(@RequestParam("maTaiKhoan") Integer maTaiKhoan,
+                        @RequestParam("soTien") Double soTien,
+                        RedirectAttributes redirectAttributes) {
+        try {
+            docGiaService.napTien(maTaiKhoan, soTien);
+            redirectAttributes.addFlashAttribute("successMessage", "✅ Nạp tiền thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "❌ Lỗi: " + e.getMessage());
+        }
+        return "redirect:/admin/docgia";
+    }
+
 }
+
+    
+    
+

@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "NhaXuatBan")
 @Data
@@ -25,5 +27,6 @@ public class NhaXuatBan {
     private String sdt;
 
     @OneToMany(mappedBy = "nhaXuatBan")
+    @JsonIgnore
     private List<Sach> sachs;
 }

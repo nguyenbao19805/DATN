@@ -96,88 +96,214 @@
 
                 <!-- Main Content -->
                 <div class="col-md-9 col-lg-10 admin-main-content h-100">
-                    <div class="admin-content-card admin-fade-in h-100 d-flex flex-column">
-                        <div class="admin-section-title">
-                            <h2>QUẢN LÝ PHIẾU MƯỢN</h2>
-                        </div>
+    <div class="admin-content-card admin-fade-in h-100 d-flex flex-column">
+        <div class="admin-section-title">
+            <h2>QUẢN LÝ PHIẾU MƯỢN</h2>
+        </div>
 
-                        <div class="management-section">
-                            <div class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 10px;">
-                                <h3 class="mb-2 mb-md-0">Danh sách phiếu mượn</h3>
-                                <form class="d-flex" th:action="@{/admin/nhapmuon}" method="get">
-                                    <input class="form-control me-2" type="search" name="keyword"
-                                           placeholder="Tìm theo tên độc giả hoặc trạng thái..." th:value="${keyword}">
-                                    <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
-                                </form>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Mã phiếu</th>
-                                            <th>Độc giả</th>
-                                            <th>Nhân viên</th>
-                                            <th>Ngày mượn</th>
-                                            <th>Ngày hết hạn</th>
-                                            <th>Ngày trả</th>
-                                            <th>Trạng thái</th>
-                                            <th>Tiền phạt</th>
-                                            <th>Hành động</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="phieuMuon : ${phieuMuonPage.content}">
-                                            <td th:text="${phieuMuon.maPhieu}"></td>
-                                            <td th:text="${phieuMuon.docGia.tenDocGia}"></td>
-                                            <td th:text="${phieuMuon.taiKhoan.username}"></td>
-                                            <td th:text="${#temporals.format(phieuMuon.ngayMuon, 'dd/MM/yyyy')}"></td>
-                                            <td th:text="${#temporals.format(phieuMuon.ngayHetHan, 'dd/MM/yyyy')}"></td>
-                                            <td th:text="${phieuMuon.ngayTra != null ? #temporals.format(phieuMuon.ngayTra, 'dd/MM/yyyy') : '-'}"></td>
-                                            <td th:text="${phieuMuon.trangThai}"></td>
-                                            <td th:text="${phieuMuon.tienPhat}"></td>
-                                            <td>
-                                                <a th:href="@{/admin/nhapmuon/sua(id=${phieuMuon.maPhieu})}"
-                                                   class="btn btn-sm btn-outline-primary me-1" title="Sửa">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a th:href="@{/admin/nhapmuon/xoa(id=${phieuMuon.maPhieu})}"
-                                                   class="btn btn-sm btn-outline-danger" title="Xóa"
-                                                   onclick="return confirm('Bạn có chắc muốn xóa phiếu mượn này?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr th:if="${phieuMuonPage.content.isEmpty()}">
-                                            <td colspan="9" class="text-center">Không có phiếu mượn nào.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="admin-add-btn-container">
-                                <nav aria-label="PhieuMuon pagination">
-                                    <ul class="pagination justify-content-center">
-                                        <li class="page-item" th:classappend="${phieuMuonPage.first} ? 'disabled'">
-                                            <a class="page-link"
-                                               th:href="@{/admin/nhapmuon(page=${phieuMuonPage.number - 1}, size=${phieuMuonPage.size}, keyword=${keyword})}"
-                                               tabindex="-1">Trước</a>
-                                        </li>
-                                        <li th:each="i : ${#numbers.sequence(0, phieuMuonPage.totalPages - 1)}"
-                                            th:class="${i == phieuMuonPage.number} ? 'page-item active' : 'page-item'">
-                                            <a class="page-link"
-                                               th:href="@{/admin/nhapmuon(page=${i}, size=${phieuMuonPage.size}, keyword=${keyword})}"
-                                               th:text="${i + 1}"></a>
-                                        </li>
-                                        <li class="page-item" th:classappend="${phieuMuonPage.last} ? 'disabled'">
-                                            <a class="page-link"
-                                               th:href="@{/admin/nhapmuon(page=${phieuMuonPage.number + 1}, size=${phieuMuonPage.size}, keyword=${keyword})}">Sau</a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                                <a th:href="@{/admin/nhapmuon/them}" class="admin-add-btn"><i class="fas fa-plus"></i> Thêm phiếu mượn</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="management-section">
+            <div class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 10px;">
+                <h3 class="mb-2 mb-md-0">Danh sách phiếu mượn</h3>
+                <form class="d-flex" th:action="@{/admin/nhapmuon}" method="get">
+                    <input class="form-control me-2" type="search" name="keyword"
+                           placeholder="Tìm theo tên độc giả" th:value="${keyword}">
+                    <button class="btn btn-outline-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+            <ul class="nav nav-tabs mb-3" id="phieuMuonTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="chuaTra-tab" data-bs-toggle="tab" data-bs-target="#chuaTra" type="button" role="tab">Chưa trả</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="daTra-tab" data-bs-toggle="tab" data-bs-target="#daTra" type="button" role="tab">Đã trả</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="treHan-tab" data-bs-toggle="tab" data-bs-target="#treHan" type="button" role="tab">Trễ hạn</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="phieuMuonTabContent">
+
+    <!-- Tab Chưa Trả -->
+    <div class="tab-pane fade show active" id="chuaTra" role="tabpanel">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <!-- Header giống cũ -->
+                    <tr>
+                        <th>Mã phiếu</th>
+                        <th>Độc giả</th>
+                        <th>Nhân viên</th>
+                        <th>Ngày mượn</th>
+                        <th>Ngày hết hạn</th>
+                        <th>Ngày trả</th>
+                        <th>Trạng thái</th>
+                        <th>Tiền mượn</th>
+                        <th>Tiền phạt</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="phieuMuon : ${phieuMuonPage.content}"
+                        th:if="${phieuMuon.trangThai == 'Chưa trả'}">
+                        <!-- Hiển thị dữ liệu -->
+                        <td th:text="${phieuMuon.maPhieu}"></td>
+                        <td th:text="${phieuMuon.docGia.tenDocGia}"></td>
+                        <td th:text="${phieuMuon.taiKhoan.username}"></td>
+                        <td th:text="${#temporals.format(phieuMuon.ngayMuon, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${#temporals.format(phieuMuon.ngayHetHan, 'dd/MM/yyyy')}"></td>
+                        <td>-</td>
+                        <td th:text="${phieuMuon.trangThai}"></td>
+                        <td th:text="${phieuMuon.thanhToan % 1 == 0} ? ${phieuMuon.thanhToan.intValue()} : ${phieuMuon.thanhToan}"></td>
+                        <td th:text="${phieuMuon.tienPhat}"></td>
+                        <td>
+                            <!-- Hành động -->
+                            <a th:href="@{/admin/nhapmuon/sua(id=${phieuMuon.maPhieu})}" class="btn btn-sm btn-outline-primary me-1">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <a th:href="@{'/admin/nhapmuon/trasach'(maPhieu=${phieuMuon.maPhieu})}" class="btn btn-sm btn-outline-success me-1">
+                                <i class="fa-solid fa-arrow-rotate-left"></i>
+                            </a>
+                            <a th:href="@{/admin/nhapmuon/xoa(id=${phieuMuon.maPhieu})}" class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('Bạn có chắc muốn xóa phiếu mượn này?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab Đã Trả -->
+    <div class="tab-pane fade" id="daTra" role="tabpanel">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <!-- Header giữ nguyên -->
+                    <tr>
+                        <th>Mã phiếu</th>
+                        <th>Độc giả</th>
+                        <th>Nhân viên</th>
+                        <th>Ngày mượn</th>
+                        <th>Ngày hết hạn</th>
+                        <th>Ngày trả</th>
+                        <th>Trạng thái</th>
+                        <th>Tiền mượn</th>
+                        <th>Tiền phạt</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="phieuMuon : ${phieuMuonPage.content}"
+                        th:if="${phieuMuon.trangThai == 'Đã trả'}">
+                        <!-- Hiển thị dữ liệu như trên -->
+                        <td th:text="${phieuMuon.maPhieu}"></td>
+                        <td th:text="${phieuMuon.docGia.tenDocGia}"></td>
+                        <td th:text="${phieuMuon.taiKhoan.username}"></td>
+                        <td th:text="${#temporals.format(phieuMuon.ngayMuon, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${#temporals.format(phieuMuon.ngayHetHan, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${#temporals.format(phieuMuon.ngayTra, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${phieuMuon.trangThai}"></td>
+                        <td th:text="${phieuMuon.thanhToan % 1 == 0} ? ${phieuMuon.thanhToan.intValue()} : ${phieuMuon.thanhToan}"></td>
+                        <td th:text="${phieuMuon.tienPhat}"></td>
+                        <td>
+                            <a th:href="@{/admin/nhapmuon/sua(id=${phieuMuon.maPhieu})}" class="btn btn-sm btn-outline-primary me-1">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <a th:href="@{/admin/nhapmuon/xoa(id=${phieuMuon.maPhieu})}" class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('Bạn có chắc muốn xóa phiếu mượn này?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab Trễ Hạn -->
+    <div class="tab-pane fade" id="treHan" role="tabpanel">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mã phiếu</th>
+                        <th>Độc giả</th>
+                        <th>Nhân viên</th>
+                        <th>Ngày mượn</th>
+                        <th>Ngày hết hạn</th>
+                        <th>Ngày trả</th>
+                        <th>Trạng thái</th>
+                        <th>Tiền mượn</th>
+                        <th>Tiền phạt</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="phieuMuon : ${phieuMuonPage.content}"
+                        th:if="${phieuMuon.trangThai == 'Trễ hạn'}">
+                        <!-- Nội dung như cũ -->
+                        <td th:text="${phieuMuon.maPhieu}"></td>
+                        <td th:text="${phieuMuon.docGia.tenDocGia}"></td>
+                        <td th:text="${phieuMuon.taiKhoan.username}"></td>
+                        <td th:text="${#temporals.format(phieuMuon.ngayMuon, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${#temporals.format(phieuMuon.ngayHetHan, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${phieuMuon.ngayTra != null ? #temporals.format(phieuMuon.ngayTra, 'dd/MM/yyyy') : '-'}"></td>
+                        <td th:text="${phieuMuon.trangThai}"></td>
+                        <td th:text="${phieuMuon.thanhToan % 1 == 0} ? ${phieuMuon.thanhToan.intValue()} : ${phieuMuon.thanhToan}"></td>
+                        <td th:text="${phieuMuon.tienPhat % 1 == 0} ? ${phieuMuon.tienPhat.intValue()} : ${phieuMuon.tienPhat}"></td>
+
+                        <td>
+                            <a th:href="@{/admin/nhapmuon/sua(id=${phieuMuon.maPhieu})}" class="btn btn-sm btn-outline-primary me-1">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <a th:href="@{'/admin/nhapmuon/trasach'(maPhieu=${phieuMuon.maPhieu})}" class="btn btn-sm btn-outline-success me-1">
+                                <i class="fa-solid fa-arrow-rotate-left"></i>
+                            </a>
+                            <a th:href="@{/admin/nhapmuon/xoa(id=${phieuMuon.maPhieu})}" class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('Bạn có chắc muốn xóa phiếu mượn này?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+
+            <div class="admin-add-btn-container mt-4">
+                <nav aria-label="PhieuMuon pagination">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${phieuMuonPage.first} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/admin/nhapmuon(page=${phieuMuonPage.number - 1}, size=${phieuMuonPage.size}, keyword=${keyword})}"
+                               tabindex="-1">Trước</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(0, phieuMuonPage.totalPages - 1)}"
+                            th:class="${i == phieuMuonPage.number} ? 'page-item active' : 'page-item'">
+                            <a class="page-link"
+                               th:href="@{/admin/nhapmuon(page=${i}, size=${phieuMuonPage.size}, keyword=${keyword})}"
+                               th:text="${i + 1}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${phieuMuonPage.last} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/admin/nhapmuon(page=${phieuMuonPage.number + 1}, size=${phieuMuonPage.size}, keyword=${keyword})}">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
+                <a th:href="@{/admin/nhapmuon/them}" class="admin-add-btn">
+                    <i class="fas fa-plus"></i> Thêm phiếu mượn
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
             </div>
         </div>
     </section>

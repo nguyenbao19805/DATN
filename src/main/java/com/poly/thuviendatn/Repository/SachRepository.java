@@ -20,4 +20,7 @@ public interface SachRepository extends JpaRepository<Sach, Integer> {
     @Query("SELECT s FROM Sach s WHERE s.danhMuc.loaiSach.maLoaiSach = :maCategory")
     List<Sach> findByDanhMucLoaiSachMaCategory(Integer maCategory);
 
+    @Query("SELECT s FROM Sach s ORDER BY s.maSach DESC")
+    List<Sach> findTop8ByOrderByMaSachDesc(Pageable pageable);
+
 }

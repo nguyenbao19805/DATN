@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -139,16 +140,41 @@ public class QuanLySachController {
     }
 
     @GetMapping("/xoa-sach")
-    public String xoaSach(@RequestParam("id") Integer id, RedirectAttributes redirectAttributes) {
+public String xoaSach(@RequestParam("id") Integer id, RedirectAttributes redirectAttributes) {
+    if (!sachRepository.existsById(id)) {
+        redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy sách để xóa.");
+        return "redirect:/admin/quanlysach";
+    }
+
     try {
+        // 1. Lấy danh sách tất cả các trang thuộc sách
+        List<TrangSach> danhSachTrang = trangSachRepository.findAllBySachMaSach(id);
+
+        for (TrangSach trang : danhSachTrang) {
+            // 2. Với mỗi trang, lấy và xóa tất cả hình ảnh liên quan
+            List<TrangSachHinhAnh> hinhAnhs = trangSachHinhAnhRepository.findByTrangSach(trang);
+            if (!hinhAnhs.isEmpty()) {
+                trangSachHinhAnhRepository.deleteAll(hinhAnhs);
+            }
+        }
+
+        // 3. Xóa toàn bộ các trang sách
+        if (!danhSachTrang.isEmpty()) {
+            trangSachRepository.deleteAll(danhSachTrang);
+        }
+
+        // 4. Cuối cùng xóa sách
         sachRepository.deleteById(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Xóa sách thành công!");
+
+        redirectAttributes.addFlashAttribute("successMessage", "Xóa sách và dữ liệu liên quan thành công!");
+
     } catch (Exception e) {
         redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa sách: " + e.getMessage());
     }
 
     return "redirect:/admin/quanlysach";
 }
+
 
     
 @GetMapping("/themsachdientu")
@@ -233,5 +259,4 @@ public String themOrCapNhatSachDienTu(
 
     return "redirect:/admin/quanlysach";
 }
-
 }

@@ -1,11 +1,17 @@
 package com.poly.thuviendatn.Service;
 
 import com.poly.thuviendatn.Model.DocGia;
+import com.poly.thuviendatn.Model.LichSuNap;
 import com.poly.thuviendatn.Model.Quyen;
 import com.poly.thuviendatn.Model.TaiKhoan;
+import com.poly.thuviendatn.Model.TaiKhoanThe;
 import com.poly.thuviendatn.Repository.DocGiaRepository;
+import com.poly.thuviendatn.Repository.LichSuNapRepository;
 import com.poly.thuviendatn.Repository.QuyenRepository;
 import com.poly.thuviendatn.Repository.TaiKhoanRepository;
+import com.poly.thuviendatn.Repository.TaiKhoanTheRepository;
+
+import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,10 +20,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.Date;
 import java.util.Random;
 
 @Service
 public class DocGiaService {
+
+    @Autowired
+    private LichSuNapRepository lichSuNapRepository;
+
+    @Autowired
+    private TaiKhoanTheRepository taiKhoanTheRepository;
 
     @Autowired
     private DocGiaRepository docGiaRepository;
@@ -45,33 +58,39 @@ public class DocGiaService {
         return password.toString();
     }
 
-    public void createDocGiaAndSendPassword(DocGia docGia) {
-        String plainPassword = generateRandomPassword(8);
+        @Transactional
+        public void createDocGiaAndSendPassword(DocGia docGia) {
+        // ✅ 1. Tạo mật khẩu ngẫu nhiên và mã hóa
+            String plainPassword = generateRandomPassword(8);
+            String encodedPassword = passwordEncoder.encode(plainPassword);
+            docGia.setPassword(encodedPassword);
 
-        // Mã hóa mật khẩu rồi lưu
-        String encodedPassword = passwordEncoder.encode(plainPassword);
-        docGia.setPassword(encodedPassword);
+            // ✅ 2. Lưu độc giả để lấy maDocGia
+            DocGia savedDocGia = docGiaRepository.save(docGia);
 
-        // ✅ Lưu độc giả trước để lấy maDocGia
-        DocGia savedDocGia = docGiaRepository.save(docGia);
+            // ✅ 3. Tạo tài khoản ứng với độc giả
+            TaiKhoan taiKhoan = new TaiKhoan();
+            taiKhoan.setMaTaiKhoan(savedDocGia.getMaDocGia()); // dùng mã độc giả làm mã tài khoản
+            taiKhoan.setUsername(savedDocGia.getTenDocGia());
+            taiKhoan.setEmail(savedDocGia.getEmail());
+            taiKhoan.setPassword(encodedPassword);
+            taiKhoan.setEnabled(true);
 
-        // ✅ Tạo tài khoản ứng với độc giả
-        TaiKhoan taiKhoan = new TaiKhoan();
-        taiKhoan.setMaTaiKhoan(savedDocGia.getMaDocGia()); // <-- Dùng mã độc giả
-        taiKhoan.setUsername(savedDocGia.getTenDocGia());
-        taiKhoan.setEmail(savedDocGia.getEmail());
-        taiKhoan.setPassword(encodedPassword);
-        taiKhoan.setEnabled(true);
+            // ✅ 4. Gán quyền mặc định
+            Quyen quyenUser = quyenRepository.findByMaQuyen(3)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy quyền USER"));
+            taiKhoan.setQuyen(quyenUser);
 
-        // Gán quyền mặc định (giả sử mã quyền 3 là USER)
-        Quyen quyenUser = quyenRepository.findByMaQuyen(3)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy quyền USER"));
-        taiKhoan.setQuyen(quyenUser);
+            // ✅ 5. Lưu tài khoản và nhận lại entity đã được quản lý
+            TaiKhoan savedTaiKhoan = taiKhoanRepository.save(taiKhoan);
 
-        taiKhoanRepository.save(taiKhoan);
-
-        // ✅ Gửi email sau khi đã có maTaiKhoan
-        sendPasswordEmail(savedDocGia.getEmail(), savedDocGia.getMaDocGia().toString(), plainPassword);
+            // ✅ 6. Tạo tài khoản thẻ liên kết với TaiKhoan đã quản lý
+            TaiKhoanThe taiKhoanThe = new TaiKhoanThe();
+            taiKhoanThe.setTaiKhoan(savedTaiKhoan);  // dùng entity đã lưu, tránh lỗi Hibernate session
+            taiKhoanThe.setSoDu(0.0);
+            taiKhoanTheRepository.save(taiKhoanThe);
+                // ✅ Gửi email sau khi đã có maTaiKhoan
+                sendPasswordEmail(savedDocGia.getEmail(), savedDocGia.getMaDocGia().toString(), plainPassword);
     }
 
     public void sendPasswordEmail(String toEmail, String maTaiKhoan, String password) {
@@ -105,4 +124,24 @@ public class DocGiaService {
             taiKhoanRepository.save(taiKhoan);
         });
     }
+    public void napTien(Integer maTaiKhoan, Double soTien) {
+    // 1. Tìm tài khoản
+    TaiKhoan taiKhoan = taiKhoanRepository.findById(maTaiKhoan)
+        .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
+
+    // 2. Cập nhật số dư
+    TaiKhoanThe taiKhoanThe = taiKhoanTheRepository.findById(maTaiKhoan)
+        .orElseThrow(() -> new RuntimeException("Không tìm thấy thẻ"));
+
+    Double soDuMoi = taiKhoanThe.getSoDu() + soTien;
+    taiKhoanThe.setSoDu(soDuMoi);
+    taiKhoanTheRepository.save(taiKhoanThe);
+
+    // 3. Ghi lịch sử nạp
+    LichSuNap lichSu = new LichSuNap();
+    lichSu.setTaiKhoan(taiKhoan);
+    lichSu.setNgayNap(new Date());
+    lichSu.setSoTien(soTien);
+    lichSuNapRepository.save(lichSu);
+}
 }

@@ -1,5 +1,8 @@
 package com.poly.thuviendatn.Model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,4 +31,11 @@ public class TaiKhoan {
 
     @Column(name = "enabled", nullable = false)
     private boolean enabled = true;
+
+    @OneToOne(mappedBy = "taiKhoan")
+    private TaiKhoanThe taiKhoanThe;
+
+    @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL)
+    private List<LichSuNap> lichSuNaps = new ArrayList<>();
+
 }

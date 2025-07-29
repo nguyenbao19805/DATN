@@ -7,6 +7,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "PhieuMuon")
 @Data
@@ -25,21 +30,28 @@ public class PhieuMuon {
     @JoinColumn(name = "maNV") // References TaiKhoan
     private TaiKhoan taiKhoan;
 
-    @Column
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate ngayMuon;
 
-    @Column
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate ngayHetHan;
 
-    @Column
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate ngayTra;
 
     @Column
+    private Integer soLuong;
+
+    @Column
+    private Double thanhToan;
+
+    @Column(columnDefinition = "NVARCHAR(200)")
     private String trangThai;
 
     @Column
-    private BigDecimal tienPhat;
+    private Double tienPhat;
 
-    @OneToMany(mappedBy = "phieuMuon")
+    @OneToMany(mappedBy = "phieuMuon", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<ChiTietPhieuMuon> chiTietPhieuMuons;
 }

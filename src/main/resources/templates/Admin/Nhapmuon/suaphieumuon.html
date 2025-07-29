@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Xem & Sửa Phiếu Mượn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container py-5">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Chi Tiết Phiếu Mượn #<span th:text="${phieuMuon.maPhieu}"></span></h4>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/admin/nhapmuon/sua}" th:object="${phieuMuon}" method="post">
+                <!-- Thông tin chính -->
+               <div class="mb-3 row align-items-center">
+    <!-- Mã Độc Giả -->
+                    <div class="col-md-4">
+                        <label for="maDocGia" class="form-label">Mã Độc Giả:</label>
+                        <input type="number" id="maDocGia" name="maDocGia" th:field="*{docGia.maDocGia}" class="form-control" readonly />
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('docGia.maDocGia')}" th:errors="*{docGia.maDocGia}"></div>
+                    </div>
+
+                    <!-- Tên Độc Giả -->
+                    <div class="col-md-4">
+                        <label for="tenDocGia" class="form-label">Tên Độc Giả:</label>
+                        <input type="text" id="tenDocGia" name="tenDocGia" th:field="*{docGia.tenDocGia}" class="form-control" readonly />
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('docGia.tenDocGia')}" th:errors="*{docGia.tenDocGia}"></div>
+                    </div>
+
+                    <!-- Thành Tiền -->
+                    <div class="col-md-4">
+                        <label class="form-label">Thành Tiền:</label>
+                        <input type="text" 
+                            th:value="${phieuMuon.thanhToan != null and phieuMuon.thanhToan % 1 == 0 ? phieuMuon.thanhToan.intValue() : phieuMuon.thanhToan}" 
+                            class="form-control" readonly />
+                    </div>
+                </div>
+
+
+                <div class="row mb-3">
+                    <div class="col">
+                        <label>Ngày Mượn:</label>
+                        <input type="date" th:field="*{ngayMuon}" class="form-control" readonly />
+                    </div>
+                    <div class="col">
+                        <label>Ngày Hết Hạn:</label>
+                        <input type="date" th:field="*{ngayHetHan}" class="form-control" readonly />
+                    </div>
+                    <div class="col">
+                        <label>Ngày Trả:</label>
+                        <input type="date" th:field="*{ngayTra}" class="form-control" readonly />
+                    </div>
+                </div>
+
+                
+
+                
+
+                <!-- Danh sách chi tiết -->
+                <h5 class="mt-4">Chi Tiết Sách Mượn</h5>
+                <div class="table-responsive" id="chiTietContainer">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã Sách</th>
+                            <th>Tên Sách</th>
+                            <th>Ghi Chú</th>
+                            <th>Xóa</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="ct, stat : *{chiTietPhieuMuons}">
+                            <td th:text="${stat.index + 1}"></td>
+                                <td>
+                                    <input type="number" class="form-control maSach-input"
+                                        th:field="*{chiTietPhieuMuons[__${stat.index}__].sach.maSach}" readonly />
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control tenSach-output"
+                                        th:value="${ct.sach != null ? ct.sach.tenSach : ''}" readonly />
+                                </td>
+                            <td>
+                                <input type="text" class="form-control"
+                                       th:field="*{chiTietPhieuMuons[__${stat.index}__].ghiChu}" />
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-outline-danger btn-sm remove-row">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4">
+                    <a href="/admin/nhapmuon" class="btn btn-secondary ms-2">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const tbody = document.querySelector("#chiTietContainer tbody");
+
+        function fetchTenSach(input) {
+            const row = input.closest("tr");
+            const maSach = input.value;
+            const tenSachInput = row.querySelector(".tenSach-output");
+
+            if (!maSach) {
+                tenSachInput.value = "";
+                return;
+            }
+
+            fetch('/api/sach/' + maSach)
+                .then(response => {
+                    if (!response.ok) throw new Error("Không tìm thấy sách");
+                    return response.json();
+                })
+                .then(data => {
+                    tenSachInput.value = data.tenSach;
+                })
+                .catch(error => {
+                    tenSachInput.value = "";
+                    console.error(error);
+                });
+        }
+
+        // Gọi khi trang đã có dòng sẵn
+        tbody.querySelectorAll(".maSach-input").forEach(input => {
+            input.addEventListener("change", () => fetchTenSach(input));
+        });
+
+        // Gọi sau khi thêm dòng mới
+        const addBtn = document.getElementById("addRowBtn");
+        if (addBtn) {
+            addBtn.addEventListener("click", () => {
+                const rowCount = tbody.children.length;
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${rowCount + 1}</td>
+                    <td>
+                        <input type="number" name="chiTietPhieuMuons[${rowCount}].sach.maSach"
+                               class="form-control maSach-input" required />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control tenSach-output" readonly />
+                    </td>
+                    <td>
+                        <input type="text" name="chiTietPhieuMuons[${rowCount}].ghiChu" class="form-control" />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-row">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+
+                const newInput = row.querySelector(".maSach-input");
+                newInput.addEventListener("change", () => fetchTenSach(newInput));
+            });
+        }
+    });
+    // Tự động lấy tên độc giả khi nhập mã
+    document.getElementById('maDocGia').addEventListener('change', function () {
+        const maDocGia = this.value;
+        if (!maDocGia) return;
+
+        fetch('/api/docgia/' + maDocGia)
+            .then(response => {
+                if (!response.ok) throw new Error('Không tìm thấy độc giả');
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('tenDocGia').value = data.tenDocGia;
+            })
+            .catch(error => {
+                document.getElementById('tenDocGia').value = '';
+                alert(error.message);
+            });
+    });
+
+    // Thêm / Xóa dòng chi tiết sách mượn
+    document.addEventListener("DOMContentLoaded", function () {
+        const container = document.querySelector("#chiTietContainer tbody");
+        const addBtn = document.getElementById("addRowBtn");
+
+        if (addBtn) {
+            addBtn.addEventListener("click", () => {
+                const rowCount = container.children.length;
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${rowCount + 1}</td>
+                    <td>
+                        <input type="number" name="chiTietPhieuMuons[${rowCount}].sach.maSach" class="form-control" required />
+                    </td>
+                    <td>
+                        <input type="text" name="chiTietPhieuMuons[${rowCount}].ghiChu" class="form-control" />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-row">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        container.addEventListener("click", function (e) {
+            if (e.target.closest(".remove-row")) {
+                const row = e.target.closest("tr");
+                row.remove();
+                updateRowIndices();
+            }
+        });
+
+        function updateRowIndices() {
+            const rows = container.querySelectorAll("tr");
+            rows.forEach((tr, index) => {
+                tr.querySelector("td").textContent = index + 1;
+                const inputs = tr.querySelectorAll("input, select, textarea");
+                inputs.forEach(input => {
+                    const newName = input.name.replace(/\[\d+\]/, `[${index}]`);
+                    input.name = newName;
+                });
+            });
+        }
+    });
+</script>
+</body>
+</html>
