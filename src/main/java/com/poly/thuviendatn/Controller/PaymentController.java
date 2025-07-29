@@ -32,7 +32,7 @@ public class PaymentController {
             if (phieuMuon.getNgayHetHan().isBefore(today) && phieuMuon.getNgayTra() == null) {
                 phieuMuon.setTrangThai("quahan");
                 long daysOverdue = java.time.temporal.ChronoUnit.DAYS.between(phieuMuon.getNgayHetHan(), today);
-                phieuMuon.setTienPhat(BigDecimal.valueOf(daysOverdue * 10000)); // 10,000 VNĐ mỗi ngày
+                phieuMuon.setTienPhat(daysOverdue * 10000.0); // 10,000 VNĐ mỗi ngày
             } else if (phieuMuon.getNgayTra() == null) {
                 phieuMuon.setTrangThai("dangmuon");
             } else {

@@ -128,16 +128,25 @@
         <td th:text="${docGia.tenDocGia}"></td>
         <td th:text="${docGia.email}"></td>
         <td th:text="${docGia.sdt}"></td>
-        <td th:text="${#strings.length(docGia.cccd) >= 5 ? docGia.cccd.substring(0, 3) + '****' + docGia.cccd.substring(docGia.cccd.length() - 2) : docGia.cccd}"></td>
+        <td th:text="${#strings.length(docGia.cccd) >= 5 ? docGia.cccd.substring(0, 3) + '****' + docGia.cccd.substring(docGia.cccd.length() ) : docGia.cccd}"></td>
         <td>
+            <!-- Nút sửa -->
             <a th:href="@{/admin/docgia/sua-docgia(id=${docGia.maDocGia})}" class="btn btn-sm btn-outline-primary me-1" title="Sửa">
                 <i class="fas fa-edit"></i>
             </a>
-            <a th:href="@{/admin/docgia/xoa-docgia(id=${docGia.maDocGia})}" class="btn btn-sm btn-outline-danger" title="Xóa"
-               onclick="return confirm('Bạn có chắc muốn xóa độc giả này?')">
+
+            <!-- Nút xóa -->
+            <a th:href="@{/admin/docgia/xoa-docgia(id=${docGia.maDocGia})}" class="btn btn-sm btn-outline-danger me-1" title="Xóa"
+            onclick="return confirm('Bạn có chắc muốn xóa độc giả này?')">
                 <i class="fas fa-trash"></i>
             </a>
+
+            <!-- ✅ Nút nạp tiền -->
+            <a th:href="@{/admin/docgia/naptien(id=${docGia.maDocGia})}" class="btn btn-sm btn-outline-success" title="Nạp tiền">
+                <i class="fas fa-wallet"></i> <!-- icon ví -->
+            </a>
         </td>
+
     </tr>
     <tr th:if="${docGiaPage.content.isEmpty()}">
         <td colspan="5" class="text-center">Không có độc giả nào.</td>

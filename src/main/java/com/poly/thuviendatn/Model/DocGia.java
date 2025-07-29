@@ -3,10 +3,13 @@ package com.poly.thuviendatn.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "DocGia")
@@ -48,6 +51,7 @@ public class DocGia {
     private boolean enabled = true;
 
     @OneToMany(mappedBy = "docGia")
+    @JsonIgnore
     private List<PhieuMuon> phieuMuons;
 
     @OneToMany(mappedBy = "docGia")
@@ -55,4 +59,6 @@ public class DocGia {
 
     @OneToMany(mappedBy = "docGia")
     private List<LichSuDoc> lichSuDocs;
+
+    
 }

@@ -6,8 +6,11 @@ import com.poly.thuviendatn.Model.TaiKhoan;
 import com.poly.thuviendatn.Repository.LoaiSachRepository;
 import com.poly.thuviendatn.Repository.SachRepository;
 import com.poly.thuviendatn.Repository.TaiKhoanRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +21,8 @@ import java.util.Optional;
 
 @Controller
 public class HomeController {
+
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
     private final SachRepository sachRepository;
     private final LoaiSachRepository loaiSachRepository;
@@ -33,31 +38,30 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(Model model, Authentication authentication) {
-        List<Sach> sachList = sachRepository.findAll();
+    public String hienThiTrangChu(Model model) {
+        Pageable pageable = PageRequest.of(0, 8);
+        List<Sach> danhSachSach = sachRepository.findTop8ByOrderByMaSachDesc(pageable);
 
-        sachList.forEach(sach -> {
-            if (sach.getHinhAnh() != null) {
-                sach.setHinhAnh(sach.getHinhAnh().replace("D:\\DATN\\src\\main\\resources\\static\\", ""));
-            }
-        });
+        // Validate hinhAnh paths
+//        danhSachSach.forEach(sach -> {
+//            if (sach.getHinhAnh() != null && !sach.getHinhAnh().isEmpty()) {
+//                logger.info("hinhAnh for book {}: {}", sach.getMaSach(), sach.getHinhAnh());
+//                // Ensure path is relative and clean
+//                String processedPath = sach.getHinhAnh().replace("\\", "/");
+//                if (!processedPath.startsWith("Image/Anhbia/")) {
+//                    logger.warn("Invalid hinhAnh path for book {}: {}", sach.getMaSach(), processedPath);
+//                    sach.setHinhAnh(null); // Fallback to default
+//                } else {
+//                    sach.setHinhAnh(processedPath);
+//                }
+//            } else {
+//                logger.warn("hinhAnh is null or empty for book {}", sach.getMaSach());
+//                sach.setHinhAnh(null);
+//            }
+//        });
 
-        model.addAttribute("sachList", sachList);
-
-        // ✅ Hiển thị thông tin người dùng đăng nhập
-        if (authentication != null && authentication.isAuthenticated()) {
-            try {
-                Integer maTaiKhoan = Integer.parseInt(authentication.getName());
-                Optional<TaiKhoan> optTaiKhoan = taiKhoanRepository.findByMaTaiKhoan(maTaiKhoan);
-                if (optTaiKhoan.isPresent()) {
-                    TaiKhoan taiKhoan = optTaiKhoan.get();
-                    model.addAttribute("username", taiKhoan.getUsername());
-                }
-            } catch (NumberFormatException ignored) {
-                // Trong trường hợp authentication.getName() không phải số (không cần xử lý)
-            }
-        }
-
+        model.addAttribute("sachList", danhSachSach);
+        logger.info("Number of books sent to template: {}", danhSachSach.size());
         return "public/home";
     }
 
@@ -67,8 +71,11 @@ public class HomeController {
         List<Sach> sachList = sachRepository.findByDanhMucLoaiSachMaCategory(categoryId);
 
         sachList.forEach(sach -> {
-            if (sach.getHinhAnh() != null) {
-                sach.setHinhAnh(sach.getHinhAnh().replace("D:\\DATN\\src\\main\\resources\\static\\", ""));
+            if (sach.getHinhAnh() != null && !sach.getHinhAnh().isEmpty()) {
+                String processedPath = sach.getHinhAnh().replace("\\", "/");
+                sach.setHinhAnh(processedPath.startsWith("Image/Anhbia/") ? processedPath : null);
+            } else {
+                sach.setHinhAnh(null);
             }
         });
 
@@ -82,8 +89,11 @@ public class HomeController {
         List<Sach> sachList = sachRepository.findAll();
 
         sachList.forEach(sach -> {
-            if (sach.getHinhAnh() != null) {
-                sach.setHinhAnh(sach.getHinhAnh().replace("D:\\DATN\\src\\main\\resources\\static\\", ""));
+            if (sach.getHinhAnh() != null && !sach.getHinhAnh().isEmpty()) {
+                String processedPath = sach.getHinhAnh().replace("\\", "/");
+                sach.setHinhAnh(processedPath.startsWith("Image/Anhbia/") ? processedPath : null);
+            } else {
+                sach.setHinhAnh(null);
             }
         });
 

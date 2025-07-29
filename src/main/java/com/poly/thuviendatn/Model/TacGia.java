@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "TacGia")
 @Data
@@ -29,5 +31,6 @@ public class TacGia {
     private String queQuan;
 
     @OneToMany(mappedBy = "tacGia")
+    @JsonIgnore
     private List<Sach> sachs;
 }

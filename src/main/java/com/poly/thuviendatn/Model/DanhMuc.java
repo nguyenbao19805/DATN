@@ -26,6 +26,7 @@ public class DanhMuc {
     private LoaiSach loaiSach;
 
     @OneToMany(mappedBy = "danhMuc")
+    @JsonIgnore
     private List<Sach> sachs;
     
 }

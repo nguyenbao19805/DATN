@@ -92,12 +92,18 @@ public class SachDienTuService {
         Sach saved = sachRepository.save(existing);
 
         // Lấy trang sách cũ
-        TrangSach trangSach = trangSachRepository.findBySachMaSach(saved.getMaSach())
-            .orElseGet(() -> {
-                TrangSach ts = new TrangSach();
-                ts.setSach(saved);
-                return trangSachRepository.save(ts);
-            });
+       List<TrangSach> trangSachs = trangSachRepository.findAllBySachMaSach(saved.getMaSach());
+
+TrangSach trangSach;
+if (trangSachs.isEmpty()) {
+    trangSach = new TrangSach();
+    trangSach.setSach(saved);
+    trangSach = trangSachRepository.save(trangSach);
+} else {
+    trangSach = trangSachs.get(0);
+}
+
+
 
         List<TrangSachHinhAnh> oldImages = trangSach.getHinhAnhs();
         int oldSize = oldImages.size();

@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "Sach")
 @Data
@@ -17,7 +19,7 @@ public class Sach {
 
     @Column(columnDefinition = "NVARCHAR(155)")
     private String tenSach;
-
+    
     @ManyToOne
     @JoinColumn(name = "maDanhMuc", nullable = false)
     private DanhMuc danhMuc;
@@ -46,14 +48,18 @@ public class Sach {
     private boolean hinhThuc = true;
 
     @OneToMany(mappedBy = "sach")
+    @JsonIgnore
     private List<TrangSach> trangSachs;
 
     @OneToMany(mappedBy = "sach")
+    @JsonIgnore
     private List<DanhGia> danhGias;
 
     @OneToMany(mappedBy = "sach")
+    @JsonIgnore
     private List<LichSuDoc> lichSuDocs;
 
     @OneToMany(mappedBy = "sach")
+    @JsonIgnore
     private List<ChiTietPhieuMuon> chiTietPhieuMuons;
 }

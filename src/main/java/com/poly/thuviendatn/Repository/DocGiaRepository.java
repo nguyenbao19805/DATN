@@ -17,5 +17,7 @@ public interface DocGiaRepository extends JpaRepository<DocGia, Integer> {
     boolean existsByEmail(String email);
     boolean existsByCccd(String cccd);
     Optional<DocGia> findByCccd(String cccd);
+    Optional<DocGia> findByMaDocGia(Integer maDocGia);
+
 
 }

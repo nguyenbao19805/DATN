@@ -24,10 +24,9 @@ public class ChiTietPhieuMuon {
     @JoinColumn(name = "MaSach")
     private Sach sach;
 
-    @Temporal(TemporalType.DATE)
-    private Date ngayTra;
+    
 
-    @Column(length = 255)
+    @Column(columnDefinition = "NVARCHAR(200)")
     private String ghiChu;
 
 }
