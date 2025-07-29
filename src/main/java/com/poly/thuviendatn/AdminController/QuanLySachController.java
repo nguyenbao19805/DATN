@@ -71,7 +71,7 @@ public class QuanLySachController {
         model.addAttribute("loaiSachs", loaiSachRepository.findAll());
         model.addAttribute("tacGias", tacGiaRepository.findAll());
         model.addAttribute("nhaXuatBans", nhaXuatBanRepository.findAll());
-        model.addAttribute("danhMucs", danhMucRepository.findByLoaiSach_MaLoaiSach(10));
+        model.addAttribute("danhMucs", danhMucRepository.findByLoaiSach_MaLoaiSach(4));
         model.addAttribute("selectedLoaiSach", 10); // sách giấy
         model.addAttribute("activeSection", "quanlysach");
         return "Admin/Quanlysach/themsachgiay";
@@ -183,7 +183,7 @@ public String showAddSachdientuForm(Model model) {
     model.addAttribute("loaiSachs", loaiSachRepository.findAll());
     model.addAttribute("tacGias", tacGiaRepository.findAll());
     model.addAttribute("nhaXuatBans", nhaXuatBanRepository.findAll());
-    model.addAttribute("danhMucs", danhMucRepository.findByLoaiSach_MaLoaiSach(11)); // Sách điện tử
+    model.addAttribute("danhMucs", danhMucRepository.findByLoaiSach_MaLoaiSach(5)); // Sách điện tử
     model.addAttribute("selectedLoaiSach", 11);
     model.addAttribute("activeSection", "quanlysach");
     return "Admin/Quanlysach/themsachdientu";
